@@ -2,6 +2,8 @@
 import * as vscode from 'vscode';
 let recording:any;
 
+let event:vscode.Disposable;
+
 export function activate(context: vscode.ExtensionContext) {
 	let startRecording = vscode.commands.registerCommand('gito-new.startRecording', () => {
 		try{
@@ -18,17 +20,19 @@ export function activate(context: vscode.ExtensionContext) {
 				text, fileName, timestamp: Date.now(),visibleRange
 			});
 
-			vscode.workspace.onDidChangeTextDocument((event) => {
-				const text = event.document.getText();
+			event = vscode.workspace.onDidChangeTextDocument((event) => {
+				const changes = event.contentChanges;
 				const fileName = event.document.fileName;
 				const visibleRange = activeTextEditor?.visibleRanges;
 				recording.push({
-					text, 
+					changes, 
 					fileName,
 					timestamp: Date.now(),
 					visibleRange
 				});
 			});
+
+			
 			
 			vscode.window.showInformationMessage(`Info: Started Recording`);
 			
@@ -41,13 +45,24 @@ export function activate(context: vscode.ExtensionContext) {
 		if(!recording){
 			return null;
 		}
+		event.dispose();
 		const delay = (ms:any) => new Promise((res) => setTimeout(res, ms));
 		vscode.window.showInformationMessage(`Info: Playing recording`);
 
 		for(let i = 0; i < recording.length; i++){
 			const item:any = recording[i];
-			setEditorText(item.text, vscode.window.activeTextEditor);
 
+			if(item.text){
+				setEditorText(item.text, vscode.window.activeTextEditor);
+			}
+
+			if(item.changes){
+				item.changes.forEach((item:any) => {
+					vscode.window.activeTextEditor?.edit((editor)=> {
+						editor.replace(item.range, item.text);
+					});
+				});
+			}
 			if(i > 1){
 				const prevItem:any = recording[i-1];
 				await delay(item.timestamp - prevItem.timestamp);
@@ -62,6 +77,10 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let stopRecording = vscode.commands.registerCommand("gito-new.stopRecording", () => {
 		recording = null;
+
+		if(event){
+			event.dispose();
+		}
 		vscode.window.showInformationMessage(`Stopped Recording`);
 	});
 
