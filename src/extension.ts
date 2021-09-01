@@ -8,11 +8,19 @@ let event:vscode.Disposable;
 
 export function activate(context: vscode.ExtensionContext) {
 
-	let startRecording = vscode.commands.registerCommand('gito-new.startRecording', () => {
+	let startRecording = vscode.commands.registerCommand('gito-new.startRecording', async () => {
 		try{
 			if(recording){
 				throw new Error("Recording is already active");
 			}	
+
+			const canRecordAudio = await vscode.commands.executeCommand("gito-new.can-record-audio");
+
+			if(canRecordAudio){
+				const audio = await vscode.commands.executeCommand("gito-new.start-audio-recording");
+
+			}
+			
 			const activeTextEditor = vscode.window.activeTextEditor;
 			const text = activeTextEditor?.document.getText();
 			const fileName = activeTextEditor?.document.fileName;
@@ -110,7 +118,7 @@ function handleTerminal(context:vscode.ExtensionContext){
 		console.log(`Active terminal changed, name=${e ? e.name : 'undefined'}`);
 	});
 
-	const terminalProfile = vscode.window.registerTerminalProfileProvider("gito-new.gito-terminal", {
+	const terminalProfile = vscode.window?.registerTerminalProfileProvider("gito-new.gito-terminal", {
 		provideTerminalProfile: (cancelationToken: vscode.CancellationToken) => {
 			const writeEmitter = new vscode.EventEmitter<string>();
 			let terminal:any;
@@ -144,7 +152,9 @@ function handleTerminal(context:vscode.ExtensionContext){
 		terminal.show();
 	}));
 
-	context.subscriptions.push(terminalProfile);
+	if(terminalProfile){
+		context.subscriptions.push(terminalProfile);
+	}
 }
 
 function handleCreateTerminal(ws: WebSocket): vscode.Terminal{
