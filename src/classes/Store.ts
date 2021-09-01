@@ -1,19 +1,23 @@
+interface Store extends MapConstructor{
+	initialData: Object,
+}
+
 class Store extends Map{
 	constructor(entries = {}){
 		super();
 		this.setState(entries);
-		this.__initialData__ = entries;
+		this.initialData = entries;
 	}
 
 	toObject(){
-		let obj = {};
+		let obj:any= {};
 		for(let [key, value] of this){
 			obj[key] = value;
 		}
 		return obj;
 	}
 
-	setState(state){
+	setState(state: any){
 		for(let key in state){
 			this.set(key, state[key]);
 		}
@@ -24,7 +28,7 @@ class Store extends Map{
 	}
 
 	reset(){
-		this.setState(this.__initialData__);
+		this.setState(this.initialData);
 	}
 
 	clear(){
@@ -35,34 +39,34 @@ class Store extends Map{
 
 	log(){
 		for(let [key, value] of this){
-			console.log({key, value})
+			console.log({key, value});
 		}
 	}
-	toArray(){
+	toArray():any[][]{
 
 		let arr = [];
 		for(let [key, value] of this){
-			arr.push([key, value]);
+			arr.push([key,value]);
 		}
 
 		return arr;
 	}
 
-	toJSON(){
+	toJSON():String{
 		return JSON.stringify(this.toObject());
 	}
 
-	toString(){
+	toString(): String{
 		return this.toJSON();
 	}
 
-	update(key, callback){
+	update(key:String, callback: Function): Store{
 		const value = this.get(key);
 		const newValue = callback(value);
 		this.set(key, newValue);
 		return this;
 	}
-	updateState(callback){
+	updateState(callback: Function): Store{
 		const newState = callback(this.getState());
 		this.setState(newState);
 		return this;
