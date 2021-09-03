@@ -1,10 +1,12 @@
 
 import * as vscode from 'vscode';
-import fetch from "node-fetch";
-import {WebSocket} from 'websocket-polyfill/lib/WebSocket';
+import {uid} from "uid"
 
 let recording:any;
+let audio: any
 let event:vscode.Disposable;
+
+const BASE_URL = `https://upload.notebrowser.com`
 
 export function activate(context: vscode.ExtensionContext) {
 
@@ -12,14 +14,8 @@ export function activate(context: vscode.ExtensionContext) {
 		try{
 			if(recording){
 				throw new Error("Recording is already active");
-			}	
-
-			const canRecordAudio = await vscode.commands.executeCommand("gito-new.can-record-audio");
-
-			if(canRecordAudio){
-				const audio = await vscode.commands.executeCommand("gito-new.start-audio-recording");
-
 			}
+			const audio = await vscode.commands.executeCommand("gito-new.start-audio-recording");
 			
 			const activeTextEditor = vscode.window.activeTextEditor;
 			const text = activeTextEditor?.document.getText();
@@ -42,21 +38,29 @@ export function activate(context: vscode.ExtensionContext) {
 					visibleRange
 				});
 			});
-
-			
-			
 			vscode.window.showInformationMessage(`Info: Started Recording`);
 			
-		}catch(err){
+		}catch(err:any){
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
 	});
 
 	let playRecording = vscode.commands.registerCommand("gito-new.playRecording", async () => {
 
-		const string = await vscode.window.showInputBox({
-			placeHolder: "Enter gito url"
-		});
+		try{
+			const string:any = await vscode.window.showInputBox({
+				placeHolder: "Enter gito url"
+			});
+	
+			const res = await fetch(string).then(res => res.text())
+			const data = JSON.parse(atob(res));
+			recording = data.recording;
+			audio = data.audio
+
+		}catch(err){
+			console.error(err)
+		}
+
 		if(!recording){
 			return null;
 		}
@@ -64,35 +68,71 @@ export function activate(context: vscode.ExtensionContext) {
 		const delay = (ms:any) => new Promise((res) => setTimeout(res, ms));
 		vscode.window.showInformationMessage(`Info: Playing recording`);
 
-		for(let i = 0; i < recording.length; i++){
-			const item:any = recording[i];
-
-			if(item.text){
-				setEditorText(item.text, vscode.window.activeTextEditor);
-			}
-
-			if(item.changes){
-				item.changes.forEach((item:any) => {
-					vscode.window.activeTextEditor?.edit((editor)=> {
-						editor.replace(item.range, item.text);
+		try{
+			await vscode.commands.executeCommand("gito-new.play-audio", audio)
+	
+			for(let i = 0; i < recording.length; i++){
+				const item:any = recording[i];
+	
+				if(item.text){
+					setEditorText(item.text, vscode.window.activeTextEditor);
+				}
+	
+				if(item.changes){
+					item.changes.forEach((item:any) => {
+						vscode.window.activeTextEditor?.edit((editor)=> {
+							editor.replace(item.range, item.text);
+						});
 					});
-				});
+				}
+				if(i > 1){
+					const prevItem:any = recording[i-1];
+					await delay(item.timestamp - prevItem.timestamp);
+				}
 			}
-			if(i > 1){
-				const prevItem:any = recording[i-1];
-				await delay(item.timestamp - prevItem.timestamp);
-			}
+	
+			recording = null;
+	
+			vscode.window.showInformationMessage(`Info: Completed Playing`);
+
+		}catch(err: any){
+			console.log(`error: ${err.message}`)
 		}
 
-		recording = null;
-
-		vscode.window.showInformationMessage(`Info: Completed Playing`);
-
 	});
 
-	let stopRecording = vscode.commands.registerCommand("gito-new.stopRecording", () => {
-		vscode.window.showInformationMessage(`Stopped Recording URL: https://bz-upload.xn--lkv.com/bcjh2321/data/232nndfds`);
+	let stopRecording = vscode.commands.registerCommand("gito-new.stopRecording", async () => {
+		audio = await vscode.commands.executeCommand("gito-new.stop-audio-recording");
+
+		const chunkedAudio = chunkString(audio, 20);
+		
+		const temp = recording.map((item: any, i: any) => {
+			return {
+				...item,
+				chunkedAudio: chunkedAudio[i],
+				audioDuration: [Date.now(), Date.now()],
+				hash: btoa(Math.random() + ""),
+				scollState: ["scroll_start", "scroll_end"],
+				cursorPosition: "0",
+			}
+		}).map((item: any) => {
+			let obj:any = {};
+			Object.keys(item).forEach((key: any) => {
+				const temp:any = item[key];
+				obj[key] = btoa(temp)
+			})
+			return JSON.stringify(obj)
+		}).join("\n");
+
+		const res = await uploadFile(new Blob([temp]), {
+			fileName: uid(16),
+			folder: "data"
+		})
+		
+
+		vscode.window.showInformationMessage(`Stopped Recording URL: ${res}`);
 	});
+
 	handleTerminal(context);
 
 	context.subscriptions.push(startRecording);
@@ -103,8 +143,12 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
 
 
+
 }
 
+function chunkString(str:any, length:any) {
+  return str.match(new RegExp('.{1,' + length + '}', 'g'));
+}
 
 function handleTerminal(context:vscode.ExtensionContext){
 	vscode.window.onDidOpenTerminal(terminal => {
@@ -118,7 +162,7 @@ function handleTerminal(context:vscode.ExtensionContext){
 		console.log(`Active terminal changed, name=${e ? e.name : 'undefined'}`);
 	});
 
-	const terminalProfile = vscode.window?.registerTerminalProfileProvider("gito-new.gito-terminal", {
+	const terminalProfile = vscode.window.registerTerminalProfileProvider && vscode.window?.registerTerminalProfileProvider("gito-new.gito-terminal", {
 		provideTerminalProfile: (cancelationToken: vscode.CancellationToken) => {
 			const writeEmitter = new vscode.EventEmitter<string>();
 			let terminal:any;
@@ -131,7 +175,7 @@ function handleTerminal(context:vscode.ExtensionContext){
 						try{
 							ws = await createNewTerminal();
 							ws.onmessage = (e:any) => writeEmitter.fire(e.data);
-						}catch(err){
+						}catch(err:any){
 							writeEmitter.fire(`ERROR! ${err.message}`);
 						}
 					},
@@ -157,6 +201,39 @@ function handleTerminal(context:vscode.ExtensionContext){
 	}
 }
 
+
+async function uploadFile(
+    fileURL: any,
+    {
+      folder = '',
+      fileName = '',
+    } = {}
+  ) {
+    try {
+
+      let blob =
+        fileURL instanceof Blob || fileURL instanceof File
+          ? fileURL
+          : await fetch(fileURL).then(res => res.blob())
+
+      const file = new File([blob], fileName)
+
+      const uploadUrl = `${BASE_URL}/upload-folder?${new URLSearchParams({
+        id: folder,
+        path: `${fileName}`,
+      })}`
+
+      const response = await fetch(uploadUrl,{
+		  body: file,
+		  method: "POST"
+      }).then(res => res.json())
+
+      const downloadURL = response.downloadURL
+      return downloadURL
+    } catch (err:any) {
+      console.error(err.message)
+    }
+  }
 function handleCreateTerminal(ws: WebSocket): vscode.Terminal{
 	const writeEmitter = new vscode.EventEmitter<string>();
 		let line = '';
