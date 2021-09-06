@@ -128,8 +128,6 @@ export function activate(context: vscode.ExtensionContext) {
 			fileName: uid(16),
 			folder: "data"
 		})
-		
-
 		vscode.window.showInformationMessage(`Stopped Recording URL: ${res}`);
 	});
 
@@ -162,7 +160,7 @@ function handleTerminal(context:vscode.ExtensionContext){
 		console.log(`Active terminal changed, name=${e ? e.name : 'undefined'}`);
 	});
 
-	const terminalProfile = vscode.window.registerTerminalProfileProvider && vscode.window?.registerTerminalProfileProvider("gito-new.gito-terminal", {
+	const terminalProfile = vscode.window.registerTerminalProfileProvider("gito-new.gito-terminal", {
 		provideTerminalProfile: (cancelationToken: vscode.CancellationToken) => {
 			const writeEmitter = new vscode.EventEmitter<string>();
 			let terminal:any;

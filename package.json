@@ -15,6 +15,7 @@
 		"onStartupFinished"
 	],
 	"main": "./dist/extension.js",
+	"browser": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
@@ -40,6 +41,16 @@
 			{
 				"command": "gito-new.createTerminal",
 				"title": "Create new terminal"
+			},
+			{
+				"command": "gito-new.can-record-audio",
+				"title": "Can record audio",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.start-audio-recording",
+				"title": "Start audio recording",
+				"category": "gito-new"
 			}
 		],
 		"terminal": {
@@ -61,6 +72,7 @@
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"lint": "eslint src --ext ts",
+		"precompile": "rm -rf ./../../dist/vscode-web/extensions/gito-extension/dist",
 		"test": "node ./out/test/runTest.js"
 	},
 	"devDependencies": {
@@ -82,6 +94,8 @@
 	},
 	"dependencies": {
 		"node-fetch": "^2.6.1",
+		"remove-files-webpack-plugin": "^1.4.5",
+		"uid": "^2.0.0",
 		"websocket-polyfill": "0.0.3"
 	}
 }

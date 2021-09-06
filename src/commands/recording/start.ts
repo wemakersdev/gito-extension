@@ -31,7 +31,7 @@ function startRecording(context: vscode.ExtensionContext){
 			});
 			vscode.window.showInformationMessage(`Info: Started Recording`);
 			
-		}catch(err){
+		}catch(err: any){
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
 }

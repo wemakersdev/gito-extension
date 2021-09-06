@@ -3,6 +3,8 @@
 'use strict';
 
 const path = require('path');
+const CopyPlugin = require("copy-webpack-plugin");
+const RemovePlugin = require('remove-files-webpack-plugin');
 
 /**@type {import('webpack').Configuration}*/
 const config = {
@@ -37,6 +39,16 @@ const config = {
         ]
       }
     ]
-  }
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {from: './dist/*', to: './../../../dist/vscode-web/dist/extensions/gito-extension', force: true},
+        {from: './package.json', to: './../../../dist/vscode-web/dist/extensions/gito-extension', force: true}
+      ],
+    }, {
+      copyUnmodified: true
+    })
+  ]
 };
 module.exports = config;
