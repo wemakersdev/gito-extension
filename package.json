@@ -65,8 +65,8 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
-		"compile": "webpack",
-		"watch": "webpack --watch",
+		"compile": "cross-env NODE_ENV=production webpack",
+		"watch": "cross-env NODE_ENV=development webpack --watch",
 		"package": "webpack --mode production --devtool hidden-source-map",
 		"test-compile": "tsc -p ./",
 		"test-watch": "tsc -watch -p ./",
@@ -83,6 +83,8 @@
 		"@types/vscode": "^1.59.0",
 		"@typescript-eslint/eslint-plugin": "^4.26.0",
 		"@typescript-eslint/parser": "^4.26.0",
+		"copy-webpack-plugin": "^9.0.1",
+		"cross-env": "^7.0.3",
 		"eslint": "^7.27.0",
 		"glob": "^7.1.7",
 		"mocha": "^8.4.0",
@@ -93,9 +95,13 @@
 		"webpack-cli": "^4.7.0"
 	},
 	"dependencies": {
+		"axios": "^0.21.4",
+		"blob-polyfill": "^5.0.20210201",
 		"node-fetch": "^2.6.1",
 		"remove-files-webpack-plugin": "^1.4.5",
 		"uid": "^2.0.0",
+		"web-file-polyfill": "^1.0.4",
+		"web-streams-polyfill": "^3.1.1",
 		"websocket-polyfill": "0.0.3"
 	}
 }

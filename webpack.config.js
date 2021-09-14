@@ -4,12 +4,16 @@
 
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
-const RemovePlugin = require('remove-files-webpack-plugin');
+
+const webpack = require('webpack');
+const target = "node";
+const mode = process.env.NODE_ENV === "development" ? "development": "production";
+const isDev = mode === "development"
 
 /**@type {import('webpack').Configuration}*/
 const config = {
-  target: 'node', // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
-	mode: 'none', // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
+  target, // vscode extensions run in a Node.js-context 📖 -> https://webpack.js.org/configuration/node/
+	mode, // this leaves the source code as close as possible to the original (when packaging we set this to 'production')
 
   entry: './src/extension.ts', // the entry point of this extension, 📖 -> https://webpack.js.org/configuration/entry-context/
   output: {
@@ -25,7 +29,8 @@ const config = {
   },
   resolve: {
     // support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js'],
+
   },
   module: {
     rules: [
@@ -41,6 +46,14 @@ const config = {
     ]
   },
   plugins: [
+
+    ...(target === "node" ? [
+      new webpack.ProvidePlugin({
+        "fetch": ["node-fetch","default"],
+        "WebSocket": ["websocket-polyfill"],
+        "Blob": ["blob-polyfill", "Blob"],
+      })
+    ]: [])
 
     // new CopyPlugin({
     //   patterns: [
