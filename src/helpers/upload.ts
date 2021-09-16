@@ -7,7 +7,7 @@ async function upload(
 		folder = '',
 		fileName = '',
 	} = {}
-): Promise<String> {
+): Promise<string> {
 	try {
 
 		const uploadUrl = `${GITO_UPLOAD_URL}/upload-folder?${new URLSearchParams({
