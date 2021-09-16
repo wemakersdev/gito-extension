@@ -6,7 +6,7 @@ const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
 
 const webpack = require('webpack');
-const target = "node";
+const target = process.env.TARGET || "node";
 const mode = process.env.NODE_ENV === "development" ? "development": "production";
 const isDev = mode === "development"
 
