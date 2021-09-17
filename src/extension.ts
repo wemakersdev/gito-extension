@@ -53,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 			const g = _url.searchParams.get("g");
 
 			if(g){
-				playGito(`https://upload.notebrowser.com/data/${g}`);
+				playGito(`gito.dev/${g}`);
 			}
 		}catch(err){
 			console.error(err);
