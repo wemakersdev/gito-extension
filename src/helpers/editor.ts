@@ -36,7 +36,6 @@ async function setDocumentChange(changes: any, editor: vscode.TextEditor | undef
 
 						const range = new vscode.Range(pos1, pos2);
 						editor.replace(range, change.text);
-
 					});
 				}
 			}
@@ -49,14 +48,60 @@ async function setDocumentChange(changes: any, editor: vscode.TextEditor | undef
 
 
 
-async function initEditor({fileName}:any):Promise<vscode.TextEditor | undefined>{
-	const doc = await vscode.workspace.openTextDocument(fileName);
+async function initEditor({fileName, fileContent}:any):Promise<vscode.TextEditor | undefined>{
+	const uri = vscode.Uri.file(fileName);
+	const doc = await openDocument({uri, fileContent});
 	const editor = await vscode.window.showTextDocument(doc);
 	return editor;
+}
+
+
+async function openDocument({uri, fileContent}: any):Promise<any>{
+	try{
+		const newUri = vscode.Uri.from({path: uri.path, scheme: "gito", fragment: uri.fragment, query: uri.query});
+		const doc = await vscode.workspace.openTextDocument(newUri);
+		return doc;
+	}catch(err){
+		const doc = await vscode.workspace.openTextDocument({
+			content: fileContent,
+		});
+		return doc;
+	}
+}
+
+
+async function setRevealRange(range: any, editor: vscode.TextEditor| undefined){
+	if(!range){
+		return;
+	}
+
+	range = range[0];
+
+	try{
+
+		let _range:any;
+		if(range instanceof vscode.Range){
+			_range = range;
+		}else if(range){
+			const pos1 = new vscode.Position(range[0].line,range[0].character);
+			const pos2 = new vscode.Position(range[1].line, range[1].character);
+		
+			_range = new vscode.Range(pos1, pos2);
+			
+		}
+	
+		
+		await editor?.revealRange(_range);
+
+	}catch(err:any){
+		debugger
+	}
+
 }
 
 export {
 	setEditorText,
 	setDocumentChange,
-	initEditor
+	initEditor,
+	setRevealRange
 }

@@ -3,7 +3,8 @@ import * as vscode from 'vscode';
 import { upload } from "./upload";
 import { uid } from 'uid';
 import { delay } from "./utils";
-import { initEditor, setDocumentChange, setEditorText } from "./editor";
+import { initEditor, setDocumentChange, setEditorText, setRevealRange } from "./editor";
+import { inform } from "./notifications";
 
 
 interface IGitoRecordingItem {
@@ -85,7 +86,7 @@ class GitoRecording {
 	}
 	async stop(): Promise<GitoRecording> {
 		this._dispose.forEach(item => item());
-		this._stopAudioRecording();
+		this.audio = await this._stopAudioRecording();
 		return this;
 	}
 
@@ -114,7 +115,11 @@ class GitoRecording {
 
 			let editor;
 
+			inform(`Started playing gito`);
+
 			await this._playAudioRecording(this.audio);
+			
+			inform(`Playing audio from gito`);
 			editor = vscode.window.activeTextEditor;
 
 			let i = 0;
@@ -122,19 +127,21 @@ class GitoRecording {
 				switch (recordingItem.type) {
 					case "EDITOR_CHANGE": {
 						editor = await initEditor({fileName: recordingItem.fileName});
+						await setRevealRange(recordingItem.visibleRange, editor);
 						await setEditorText(recordingItem.fileContent, editor);
 						await delay(500);
 						break;
 					}
 
 					case 'TEXT_CHANGE': {
+						await setRevealRange(recordingItem.visibleRange, editor);
 						await setDocumentChange(recordingItem.changes, editor);
 						break;
-
 					}
 
 					case "INITIAL_STATE": {
-						editor = await initEditor({fileName: recordingItem.fileName});
+						editor = await initEditor({fileName: recordingItem.fileName, fileContent: recordingItem.fileContent});
+						await setRevealRange(recordingItem.visibleRange, editor);
 						await setEditorText(recordingItem.fileContent, editor);
 						break;
 					}
@@ -152,7 +159,10 @@ class GitoRecording {
 				i++;
 			}
 
+			inform(`Playback complete!`);
+			
 		} catch (err:any) {
+			inform(err.message);
 			debugger;
 		}
 	}
@@ -191,8 +201,8 @@ class GitoRecording {
 		await executeCommand("gito-new.start-audio-recording");
 	}
 
-	async _stopAudioRecording() {
-		await executeCommand("gito-new.stop-audio-recording");
+	async _stopAudioRecording():Promise<string> {
+		return (await executeCommand("gito-new.stop-audio-recording")|| "") as string;
 	}
 
 	async _playAudioRecording(audio: string) {
@@ -202,7 +212,7 @@ class GitoRecording {
 
 	getEditorState(textEditor: vscode.TextEditor | undefined, excludeFileContent?: boolean) {
 		const fileContent = !excludeFileContent && textEditor?.document.getText();
-		const fileName = textEditor?.document.fileName;
+		const fileName = textEditor?.document.uri.path;
 		const visibleRange = textEditor?.visibleRanges;
 
 		return {

@@ -11,20 +11,19 @@ import handleGitoStatusBar from './helpers/statusBar';
 import { recordGito } from './helpers/recorder';
 import { inform } from './helpers/notifications';
 import { playGito } from './helpers/player';
+import { registerTextDocumentContentProvider } from './helpers/textDocumentContentProvider';
 
 let recording: any;
-let audio: any;
-let event: vscode.Disposable;
 
 export function activate(context: vscode.ExtensionContext) {
 	setExtensionContext(context);
 	handleGitoStatusBar();
-
+	registerTextDocumentContentProvider();
+	
 	registerCommand('gito-new.startRecording', async () => {
 		try {
 			recording = await recordGito();
 			vscode.window.showInformationMessage(`Info: Started Recording`);
-
 		} catch (err: any) {
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
