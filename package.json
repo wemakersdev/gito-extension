@@ -51,6 +51,11 @@
 				"command": "gito-new.start-audio-recording",
 				"title": "Start audio recording",
 				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.play-audio-recording",
+				"title": "play audio recording",
+				"category": "gito-new"
 			}
 		],
 		"terminal": {
