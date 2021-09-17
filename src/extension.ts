@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 		const url = await recording.upload();
 
 		const _url = new URL(url);
-		const newUrl = _url.pathname.replace("/data", "")
+		const newUrl = _url.pathname.replace("/data/", "")
 		inform(`Gito Url: gito.dev/${newUrl}`);
 	});
 	
