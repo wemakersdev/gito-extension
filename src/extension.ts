@@ -40,7 +40,10 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand("gito-new.stopRecording", async () => {
 		await recording.stop();
 		const url = await recording.upload();
-		inform(`Gito Url: ${url}`);
+
+		const _url = new URL(url);
+		const newUrl = _url.pathname.replace("/data", "")
+		inform(`Gito Url: gito.dev/${newUrl}`);
 	});
 	
 	
@@ -53,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 			const g = _url.searchParams.get("g");
 
 			if(g){
-				playGito(`gito.dev/${g}`);
+				playGito(`https://upload.notebrowser.com/data/${g}`);
 			}
 		}catch(err){
 			console.error(err);
