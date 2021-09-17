@@ -206,7 +206,7 @@ class GitoRecording {
 	}
 
 	async _playAudioRecording(audio: string) {
-		await executeCommand("gito-new.stop-audio-recording", audio);
+		await executeCommand("gito-new.playRecording", audio);
 	}
 
 
