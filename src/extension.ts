@@ -19,6 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
 	setExtensionContext(context);
 	handleGitoStatusBar();
 	registerTextDocumentContentProvider();
+
 	
 	registerCommand('gito-new.startRecording', async () => {
 		try {
@@ -28,22 +29,38 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
 	});
-
+	
 	registerCommand("gito-new.playRecording", async () => {
 		const string:any = await vscode.window.showInputBox({
 			placeHolder: "Enter gito url"
 		});
 		playGito(string);		
 	});
-
+	
 	registerCommand("gito-new.stopRecording", async () => {
 		await recording.stop();
 		const url = await recording.upload();
 		inform(`Gito Url: ${url}`);
 	});
-
-
+	
+	
 	handleTerminal(context);
+	executeCommand("github1s.vscode.get-browser-url").then(async (url:any) => {
+		
+		try{
+			const _url = new URL(url);
+			
+			const g = _url.searchParams.get("g");
+
+			if(g){
+				playGito(`https://upload.notebrowser.com/data/${g}`);
+			}
+		}catch(err){
+			console.error(err);
+		}
+	}).catch((err:any) => {
+		console.error(err);
+	});
 }
 
 export function deactivate() {

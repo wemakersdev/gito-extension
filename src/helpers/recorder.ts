@@ -22,6 +22,7 @@ interface IGitoRecordingItem {
 
 interface IGitoRecording {
 	recording?: IGitoRecordingItem[] | any[]
+	browserUrl?: string|undefined
 	audio?: string
 
 	readonly createdBy?: string
@@ -36,6 +37,7 @@ class GitoRecording {
 	audio: string = "";
 	changes:vscode.Range[] = [];
 
+	browserUrl: string|undefined;
 	private activeTextEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 	private _dispose: Function[] = [];
 
@@ -87,9 +89,14 @@ class GitoRecording {
 	async stop(): Promise<GitoRecording> {
 		this._dispose.forEach(item => item());
 		this.audio = await this._stopAudioRecording();
+		this.browserUrl = await this.getBrowserUrl();
 		return this;
 	}
 
+	async getBrowserUrl(): Promise<string>{
+		const url = await executeCommand("github1s.vscode.get-browser-url");
+		return (url || "") as string;
+	}
 	async upload(): Promise<string> {
 		const url = await upload({
 			...this
