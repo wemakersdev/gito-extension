@@ -50,9 +50,17 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	registerCommand("gito-new.playRecording", async () => {
-		const string:any = await vscode.window.showInputBox({
+		let string:any = await vscode.window.showInputBox({
 			placeHolder: "Enter gito url"
 		});
+
+		if(string && string.includes("gito.dev/")){
+			string = string.replace("gito.dev/", "upload.notebrowser.com/data/");
+			if(!string.includes("https://")){
+				string = `https://${string}`;
+				// debugger
+			}
+		}
 
 
 		playGito(string);		
