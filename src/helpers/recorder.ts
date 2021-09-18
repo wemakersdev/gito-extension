@@ -40,6 +40,7 @@ class GitoRecording {
 	browserUrl: string|undefined;
 	private activeTextEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 	private _dispose: Function[] = [];
+	private _isPaused: boolean = false;
 
 
 	constructor(options: IGitoRecording) {
@@ -60,11 +61,11 @@ class GitoRecording {
 			this.addInitialState();
 
 			const disposableEditorChange = vscode.window.onDidChangeActiveTextEditor((editor) => {
-				this.handleTextEditorChange(editor);
+				!this._isPaused && this.handleTextEditorChange(editor);
 			});
 
 			const disposableTextChange = vscode.workspace.onDidChangeTextDocument((event) => {
-				this.handleTextChange(event, this.activeTextEditor);
+				!this._isPaused && this.handleTextChange(event, this.activeTextEditor);
 			});
 
 
@@ -87,6 +88,8 @@ class GitoRecording {
 
 	}
 	async stop(): Promise<GitoRecording> {
+
+		inform(`Stopped recording`);
 		this._dispose.forEach(item => item());
 		this.audio = await this._stopAudioRecording();
 		this.browserUrl = await this.getBrowserUrl();
@@ -98,23 +101,33 @@ class GitoRecording {
 		return (url || "") as string;
 	}
 	async upload(): Promise<string> {
+		inform(`Starting uploading Gito`)
 		const url = await upload({
 			...this
 		}, {
 			fileName: uid(16),
 			folder: "data"
 		});
-
 		return url;
-
 	}
 
-	pause() {
+	async pause() {
+		try{
+			await this._pauseAudioRecording();
+			this._isPaused = true
 
+		}catch(err){
+			console.error(err);
+		}
 	}
+	async resume() {
 
-	resume() {
-
+		try{
+			await this._resumeAudioRecording();
+			this._isPaused = false;
+		}catch(err){
+			console.error(err);
+		}
 	}
 
 	async play() {
@@ -212,6 +225,13 @@ class GitoRecording {
 		return (await executeCommand("gito-new.stop-audio-recording")|| "") as string;
 	}
 
+	async _pauseAudioRecording(){
+		await executeCommand("gito-new.pause-audio-recording");
+	}
+
+	async _resumeAudioRecording(){
+		await executeCommand("gito-new.resume-audio-recording");
+	}
 	async _playAudioRecording(audio: string) {
 		await executeCommand("gito-new.play-audio-recording", audio);
 	}
@@ -232,6 +252,9 @@ class GitoRecording {
 	setEditorState(textEditor: vscode.TextEditor) {
 		return null;
 	}
+
+
+	
 
 }
 

@@ -4,14 +4,15 @@ import { uid } from "uid";
 import { setExtensionContext } from './helpers/context';
 import { upload } from './helpers/upload';
 import { linkWebsocketToVscodeTerminal, registerTerminalProfile, requestTerminalFromServer } from './helpers/terminal';
-import { setEditorText } from './helpers/editor';
+
 import { executeCommand, registerCommand } from './helpers/commands';
-import axios from 'axios';
-import handleGitoStatusBar from './helpers/statusBar';
+
+import handleGitoStatusBar, { startedRecordingUpdate, stoppedRecordingUpdate } from './helpers/statusBar';
 import { recordGito } from './helpers/recorder';
 import { inform } from './helpers/notifications';
 import { playGito } from './helpers/player';
 import { registerTextDocumentContentProvider } from './helpers/textDocumentContentProvider';
+import startRecording from './commands/recording/start';
 
 let recording: any;
 
@@ -23,8 +24,26 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	registerCommand('gito-new.startRecording', async () => {
 		try {
-			recording = await recordGito();
-			vscode.window.showInformationMessage(`Info: Started Recording`);
+			if(!recording){
+
+				recording = await recordGito();
+				startedRecordingUpdate();
+				vscode.window.showInformationMessage(`Info: Started Recording`);
+			}else{
+				await recording.stop();
+				const url = await recording.upload();
+				stoppedRecordingUpdate();
+				const _url = new URL(url);
+				const newUrl = _url.pathname.replace("/data/", "")
+				inform(`Gito Url: gito.dev/${newUrl}`, [{
+					string: "Copy url",
+					callback: async () =>{
+						await executeCommand("gito-new.copy-to-clipboard", `gito.dev/${newUrl}`);	
+						inform(`Copied!`);
+					}
+				}]);
+				recording = undefined;
+			}
 		} catch (err: any) {
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
@@ -34,16 +53,61 @@ export function activate(context: vscode.ExtensionContext) {
 		const string:any = await vscode.window.showInputBox({
 			placeHolder: "Enter gito url"
 		});
+
+
 		playGito(string);		
+	});
+
+	registerCommand("gito-new.create-gito-voice-room", async () => {
+		const roomId = uid();
+		inform(`Successfully created room: ${roomId}`, [{
+			string: "Copy Room ID",
+			callback: async () =>{
+				await executeCommand("gito-new.copy-to-clipboard", roomId);	
+				inform(`Copied!`);
+			}
+		}]);
+		
+		executeCommand(`gito-new.create-room`, roomId);
+	});
+
+	registerCommand("gito-new.join-gito-voice-room", async () => {
+		const roomId:any = await vscode.window.showInputBox({
+			placeHolder: "Enter Room ID"
+		});
+		executeCommand(`gito-new.join-room`, roomId);
+		inform(`Joining room: ${roomId}`);
+	});
+
+	registerCommand("gito-new.leave-gito-voice-room", async () => {
+		const roomId:any = await vscode.window.showInputBox({
+			placeHolder: "Enter Room ID"
+		});	
+		executeCommand(`gito-new.leave-room`, roomId);
+
+		inform(`Leaving gito voice room: ${roomId}`, [{
+			string: "confirm",
+			callback: () => {
+				inform(`left gito voice room`)
+			}
+		}]);
+
 	});
 	
 	registerCommand("gito-new.stopRecording", async () => {
+		stoppedRecordingUpdate();
 		await recording.stop();
 		const url = await recording.upload();
 
 		const _url = new URL(url);
 		const newUrl = _url.pathname.replace("/data/", "")
-		inform(`Gito Url: gito.dev/${newUrl}`);
+		inform(`Gito Url: gito.dev/${newUrl}`, [{
+			string: "Copy url",
+			callback: async () =>{
+				await executeCommand("gito-new.copy-to-clipboard", `gito.dev/${newUrl}`);	
+				inform(`Copied!`);
+			}
+		}]);
 	});
 	
 	
@@ -51,6 +115,9 @@ export function activate(context: vscode.ExtensionContext) {
 	executeCommand("github1s.vscode.get-browser-url").then(async (url:any) => {
 		
 		try{
+			if(!url) {
+				return;
+			}
 			const _url = new URL(url);
 			
 			const g = _url.searchParams.get("g");

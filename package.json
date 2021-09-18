@@ -17,30 +17,46 @@
 	"main": "./dist/extension.js",
 	"browser": "./dist/extension.js",
 	"contributes": {
+		"keybindings": [
+			{
+				"key": "alt+g",
+				"command": "gito-new.startRecording"
+			},
+			{
+				"key": "alt+shift+g",
+				"command": "gito-new.stopRecording"
+			}
+		],
 		"commands": [
 			{
 				"command": "gito-new.startRecording",
-				"title": "Start recording gito"
+				"title": "Start recording gito",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.stopRecording",
-				"title": "Stop recording gito"
+				"title": "Stop recording gito",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.createTerminal",
-				"title": "Create new gito terminal"
+				"title": "Create new gito terminal",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.clearTerminal",
-				"title": "Clear gito terminal"
+				"title": "Clear gito terminal",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.playRecording",
-				"title": "Play gito recording"
+				"title": "Play gito recording",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.createTerminal",
-				"title": "Create new terminal"
+				"title": "Create new terminal",
+				"category": "gito-new"
 			},
 			{
 				"command": "gito-new.can-record-audio",
@@ -55,6 +71,41 @@
 			{
 				"command": "gito-new.play-audio-recording",
 				"title": "play audio recording",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.pause-audio-recording",
+				"title": "play audio recording",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.resume-audio-recording",
+				"title": "play audio recording",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.join-gito-voice-room",
+				"title": "Join gito voice room",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.create-gito-voice-room",
+				"title": "Create gito voice room",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.leave-gito-voice-room",
+				"title": "Leave gito voice room",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.join-room",
+				"title": "join voice room",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.leave-room",
+				"title": "leave voice room",
 				"category": "gito-new"
 			}
 		],
@@ -103,6 +154,8 @@
 	"dependencies": {
 		"axios": "^0.21.4",
 		"blob-polyfill": "^5.0.20210201",
+		"dayjs": "^1.10.7",
+		"moment": "^2.29.1",
 		"node-fetch": "^2.6.1",
 		"remove-files-webpack-plugin": "^1.4.5",
 		"uid": "^2.0.0",
