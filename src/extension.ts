@@ -91,7 +91,6 @@ export function activate(context: vscode.ExtensionContext) {
 				inform(`left gito voice room`)
 			}
 		}]);
-
 	});
 	
 	registerCommand("gito-new.stopRecording", async () => {
@@ -108,6 +107,8 @@ export function activate(context: vscode.ExtensionContext) {
 				inform(`Copied!`);
 			}
 		}]);
+
+		recording = undefined
 	});
 	
 	
