@@ -5,6 +5,7 @@ import { uid } from 'uid';
 import { delay } from "./utils";
 import { initEditor, setDocumentChange, setEditorText, setRevealRange } from "./editor";
 import { inform } from "./notifications";
+import { getPlaybackSpeedContext, getStatusBarItemsContext } from "./context";
 
 
 interface IGitoRecordingItem {
@@ -135,6 +136,10 @@ class GitoRecording {
 
 			let editor;
 
+			const statusBarItems = getStatusBarItemsContext();
+			statusBarItems.show(["speed" ,"pause", "stop"]);
+			statusBarItems.hide(["record"]);
+
 			inform(`Started playing gito`);
 
 			await this._playAudioRecording(this.audio);
@@ -173,7 +178,7 @@ class GitoRecording {
 					if (prevItem) {
 						const t1: number = recordingItem.timestamp || 0;
 						const t2: number = prevItem.timestamp || 0;
-						await delay(t1 - t2);
+						await delay((t1 - t2)/getPlaybackSpeedContext());
 					}
 				}
 				i++;
@@ -181,6 +186,9 @@ class GitoRecording {
 
 			inform(`Playback complete!`);
 			
+			statusBarItems.hide(["speed" ,"pause", "stop"]);
+			statusBarItems.show(["record"]);
+
 		} catch (err:any) {
 			inform(err.message);
 			debugger;

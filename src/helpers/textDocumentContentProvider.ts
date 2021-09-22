@@ -10,30 +10,6 @@ function registerTextDocumentContentProvider() {
 	const extensionContext = getExtensionContext();
 
 	const myScheme = "gito";
-
-	// const myProvider = new class implements vscode.TextDocumentContentProvider {
-	// 	onDidChangeEmitter = new vscode.EventEmitter<vscode.Uri>();
-	// 	onDidChange = this.onDidChangeEmitter.event;
-
-	// 	provideTextDocumentContent(uri: vscode.Uri): string {
-	// 		const context = getGitoContext();
-	// 		const item = context.recording.find((recordingItem: IGitoRecordingItem) => {
-	// 			if (uri && uri.path && uri.path === recordingItem.fileName && recordingItem.type === "EDITOR_CHANGE" || "INITIAL_STATE") {
-	// 				return true;
-	// 			} else {
-	// 				return false;
-	// 			}
-	// 		});
-	// 		// debugger
-
-	// 		if (item && item.fileContent) {
-	// 			return item.fileContent;
-	// 		}
-
-	// 		return `Problem in creating file`;
-	// 	}
-	// };
-
 	const myProvider = new class implements vscode.FileSystemProvider {
 		onDidChangeFile(...args:any):any{}
 		readDirectory(...args:any):any{}

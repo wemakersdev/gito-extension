@@ -107,8 +107,15 @@
 				"command": "gito-new.leave-room",
 				"title": "leave voice room",
 				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.increasePlaybackSpeed",
+				"title": "increases playback speed",
+				"category": "gito-new"
 			}
 		],
+
+		
 		"terminal": {
 			"profiles": [
 				{

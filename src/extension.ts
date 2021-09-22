@@ -1,13 +1,13 @@
 
 import * as vscode from 'vscode';
 import { uid } from "uid";
-import { setExtensionContext } from './helpers/context';
+import { getPlaybackSpeedContext, setExtensionContext, setStatusBarItemsContext, setPlaybackSpeedContext } from './helpers/context';
 import { upload } from './helpers/upload';
 import { linkWebsocketToVscodeTerminal, registerTerminalProfile, requestTerminalFromServer } from './helpers/terminal';
 
 import { executeCommand, registerCommand } from './helpers/commands';
 
-import handleGitoStatusBar, { startedRecordingUpdate, stoppedRecordingUpdate } from './helpers/statusBar';
+import {initStatusBar} from './helpers/statusBar';
 import { recordGito } from './helpers/recorder';
 import { inform } from './helpers/notifications';
 import { playGito } from './helpers/player';
@@ -18,21 +18,20 @@ let recording: any;
 
 export function activate(context: vscode.ExtensionContext) {
 	setExtensionContext(context);
-	handleGitoStatusBar();
 	registerTextDocumentContentProvider();
-
-	
+	const statusBarItems = initStatusBar();
+	setStatusBarItemsContext(statusBarItems);
 	registerCommand('gito-new.startRecording', async () => {
 		try {
 			if(!recording){
 
 				recording = await recordGito();
-				startedRecordingUpdate();
+				statusBarItems.handleRecordingStartUpdate();
 				vscode.window.showInformationMessage(`Info: Started Recording`);
 			}else{
 				await recording.stop();
 				const url = await recording.upload();
-				stoppedRecordingUpdate();
+				statusBarItems.handleRecordingStopUpdate()
 				const _url = new URL(url);
 				const newUrl = _url.pathname.replace("/data/", "")
 				inform(`Gito Url: gito.dev/${newUrl}`, [{
@@ -58,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 			string = string.replace("gito.dev/", "upload.notebrowser.com/data/");
 			if(!string.includes("https://")){
 				string = `https://${string}`;
-				// debugger
+				
 			}
 		}
 
@@ -77,6 +76,18 @@ export function activate(context: vscode.ExtensionContext) {
 		}]);
 		
 		executeCommand(`gito-new.create-room`, roomId);
+	});
+
+	registerCommand("gito-new.increasePlaybackSpeed", async () => {
+		let speed = getPlaybackSpeedContext();
+		speed = speed*2 > 32 ? 1 : speed*2;
+		setPlaybackSpeedContext(speed);
+		
+		const item = statusBarItems.get("speed")
+
+		if(item){
+			item.text = `speed: ${speed}x`;
+		}
 	});
 
 	registerCommand("gito-new.join-gito-voice-room", async () => {
@@ -102,7 +113,7 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	
 	registerCommand("gito-new.stopRecording", async () => {
-		stoppedRecordingUpdate();
+		statusBarItems.handleRecordingStopUpdate();
 		await recording.stop();
 		const url = await recording.upload();
 

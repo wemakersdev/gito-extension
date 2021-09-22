@@ -1,126 +1,154 @@
 import * as vscode from 'vscode';
+export interface IStatusBarItem{
+	id: string
+	item: vscode.StatusBarItem
 
-
-let statusBarItems: any = [];
-let recordButton: any;
-let pauseButton: any;
-let stopButton: any;
-let timer: any;
-let _stopTimer;
-
-function _startTimer({ precision = 0.1 }:any = {}) {
-	const id = setInterval(() => {
-		timer += precision;
-	}, precision * 1000);
-
-	return () => clearInterval(id);
 }
+export class StatusBarItems{
+	constructor(
+		public items: IStatusBarItem[]
+	){}
 
+	add(statusBarItem: IStatusBarItem){
+		this.items.push(statusBarItem);
+	}
 
-function addStatusBarItem({
-	name,
-	tooltip,
-	command,
-	autoshow
-}: any) {
-	if (getStatusBarItem(name)) {
-		debugger
-	} else {
+	remove(id:string){
+		this.items = this.items.filter(item => item.id !== id)
+	}
 
-		const titleItem = vscode.window.createStatusBarItem(
-			vscode.StatusBarAlignment.Left,
-			0
-		);
-		titleItem.text = name;
-		titleItem.tooltip = tooltip;
-		titleItem.command = command;
+	static create(alignment: vscode.StatusBarAlignment | undefined, priority?: number|undefined){
+		return vscode.window.createStatusBarItem(alignment, priority);
+	}
 
-		if (autoshow) {
-			titleItem.show();
+	find(id: string): IStatusBarItem | undefined{
+		return this.items.find(item => item.id === id);
+	}
+
+	get(id: string):  vscode.StatusBarItem | undefined{
+		return this.find(id)?.item;
+	}
+
+	set(id: string, options: Partial<vscode.StatusBarItem>): vscode.StatusBarItem{
+		const item = this.get(id);
+		
+		if(!item) {
+			throw new Error(`Item for passed id doesn't exists`)
+		}else{	
+			for(let key in options){
+				(item as any)[key] = (options as any)[key];
+			}
 		}
 
-		statusBarItems.push({
-			name: name,
-			instance: titleItem
-		});
-
-		return titleItem
+		return item;
 	}
-}
 
-function removeStatusBarItem(name: string) {
-	const item = getStatusBarItem(name);
+	update(
+		id: string, 
+		callback: (item: vscode.StatusBarItem) => Partial<vscode.StatusBarItem>
+	): vscode.StatusBarItem{
+		const item = this.get(id);
+		
+		if(item){
+			const data = callback(item);
+			this.set(id, data);
 
-	if (item) {
-		item.instance.hide();
-		item.instance.dispose();
-		statusBarItems = statusBarItems.filter((item: any) => item.name !== name);
+			return item;
+		}else{
+			throw new Error(`Item for passed id doesn't exists`);
+		}
 	}
+
+	hide(id: string | string[]): vscode.StatusBarItem| vscode.StatusBarItem[] | undefined{
+
+		const hide = (id:string):vscode.StatusBarItem | undefined => {
+			const item = this.get(id);
+			item?.hide();
+			return item;
+		}; 
+		
+		return Array.isArray(id) 
+			? id.map(_id => hide(_id)).filter(_item => !!_item) as vscode.StatusBarItem[]
+			: hide(id);
+	}	
+
+	show(id: string | string[]): vscode.StatusBarItem| vscode.StatusBarItem[] | undefined{
+
+		const show = (id:string):vscode.StatusBarItem | undefined => {
+			const item = this.get(id);
+			item?.show();
+			return item;
+		}; 
+		
+		return Array.isArray(id) 
+			? id.map(_id => show(_id)).filter(_item => !!_item) as vscode.StatusBarItem[]
+			: show(id);
+	}
+
+	handleRecordingStartUpdate(){
+		this.hide("record");
+		this.show(["stop", "pause"]);
+	}
+
+	handleRecordingStopUpdate(){
+		this.show("record");
+		this.hide(["stop", "pause"]);
+	}
+
 }
 
-function getStatusBarItem(name: string) {
-	return statusBarItems.find((item: any) => item.name === name)
-}
 
 
+export function initStatusBar(){
 
-function handleGitoStatusBar() {
-	recordButton = addStatusBarItem({
-		name: "$(debug-start) Record Gito",
+	const items: IStatusBarItem[] = ["record", "pause", "resume", "timer", "play", "stop", "speed"].map((id:string) => {
+		return {
+			id,
+			item: StatusBarItems.create(vscode.StatusBarAlignment.Left,0)
+		};
+	});
+
+
+	const statusBarItems: StatusBarItems = new StatusBarItems(items);
+
+	statusBarItems.set("record", {
+		text: "$(debug-start) Record Gito",
 		tooltip: "Start gito recording",
 		command: {
 			title: "gito-new",
 			command: "gito-new.startRecording"
 		},
-		autoshow: true
-	});
+	})
 
-	stopButton = addStatusBarItem({
-		name: "$(debug-stop) Stop Recording",
+	statusBarItems.set("stop", {
+		text: "$(debug-stop) Stop Recording",
 		tooltip: "Stop gito recording",
 		command: {
 			title: "gito-new",
 			command: "gito-new.stopRecording"
 		},
-		autoshow: false
 	});
 
+	statusBarItems.set("pause", {
+		text: "$(debug-pause) Pause Recording",
+		tooltip: "Pause gito recording",
+		command: {
+			title: "gito-new",
+			command: "gito-new.pauseRecording"
+		},
+	});
+
+	statusBarItems.set("speed", {
+		text: "speed: 1x",
+		tooltip: "Increase playback speed",
+		command: {
+			title: "gito-new",
+			command: "gito-new.increasePlaybackSpeed"
+		},
+	});
+
+
+	statusBarItems.show("record");
+
+	return statusBarItems;
 }
-
-
-function startedRecordingUpdate() {
-	recordButton.hide();
-	stopButton.show();
-}
-
-
-function stoppedRecordingUpdate() {
-	recordButton.show();
-	stopButton.hide();
-}
-
-
-function startTimer() {
-	if (!timer) {
-		timer = addStatusBarItem({
-			name: "$(refactor-preview-view-icon) 00:00",
-			tooltip: "Timer",
-			autoshow: false
-		});
-	}
-
-	timer.show();
-
-}
-
-function stopTimer() {
-
-}
-
-
-export default handleGitoStatusBar;
-
-export {
-	stoppedRecordingUpdate,
-	startedRecordingUpdate
-};
