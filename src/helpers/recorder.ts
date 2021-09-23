@@ -5,7 +5,7 @@ import { uid } from 'uid';
 import { delay } from "./utils";
 import { initEditor, setDocumentChange, setEditorText, setRevealRange } from "./editor";
 import { inform } from "./notifications";
-import { getPlaybackSpeedContext, getStatusBarItemsContext } from "./context";
+import { getGlobalStoreContext, getPlaybackSpeedContext, getStatusBarItemsContext } from "./context";
 
 
 interface IGitoRecordingItem {
@@ -25,6 +25,7 @@ interface IGitoRecording {
 	recording?: IGitoRecordingItem[] | any[]
 	browserUrl?: string|undefined
 	audio?: string
+	id?: string
 
 	readonly createdBy?: string
 	readonly createdAt?: number
@@ -32,13 +33,23 @@ interface IGitoRecording {
 	editedAt?: number
 }
 
+interface IGitoMetaData{
+	id: string
+	name: string
+	timestamp: number
+	createdBy: string
+	size: number
+	hasAudio: boolean
+}
+
 class GitoRecording {
 
 	recording: IGitoRecordingItem[] | any[] = [];
 	audio: string = "";
 	changes:vscode.Range[] = [];
-
 	browserUrl: string|undefined;
+	id:string = uid();
+
 	private activeTextEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 	private _dispose: Function[] = [];
 	private _isPaused: boolean = false;
@@ -106,10 +117,41 @@ class GitoRecording {
 		const url = await upload({
 			...this
 		}, {
-			fileName: uid(16),
+			fileName: this.id,
 			folder: "data"
 		});
-		return url;
+
+		const _url = new URL(url);
+		const newUrl = _url.pathname.replace("/data/", "");
+
+		inform(`Gito Url: gito.dev/${newUrl}`, [{
+			string: "Copy url",
+			callback: async () =>{
+				await executeCommand("gito-new.copy-to-clipboard", `gito.dev/${newUrl}`);	
+				inform(`Copied!`);
+			}
+		}]);
+
+		await this.saveGitoInformation();
+
+		return newUrl;
+	}
+
+	get size(){
+		const blob = new Blob([JSON.stringify(this)]);
+		return blob.size;
+	}
+
+	async saveGitoInformation(gitoMetaData: IGitoMetaData = {
+		id: this.id,
+		name: "sadasd",
+		createdBy: "sadasd",
+		timestamp: Date.now(),
+		size: this.size,
+		hasAudio: !!this.audio,
+	}){
+		const globalStore = getGlobalStoreContext();
+		await globalStore.setData(this.id, gitoMetaData)
 	}
 
 	async pause() {
@@ -285,5 +327,6 @@ export {
 	GitoRecording,
 	IGitoRecording,
 	IGitoRecordingItem,
-	recordGito
+	IGitoMetaData,
+	recordGito,
 };

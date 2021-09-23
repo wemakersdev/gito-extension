@@ -34,7 +34,7 @@
 				{
 					"id": "gito-files",
 					"name": "All gito files",
-					"icon": "media/dep.svg",
+					"icon": "src/media/gito-logo.svg",
 					"contextualTitle": "Gito Explorer"
 				}
 			]

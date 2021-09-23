@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import { GITHUB_OAUTH_TOKEN } from './constants';
+import { GlobalStore } from './globalStore';
 import { GitoRecording } from './recorder';
 import { StatusBarItems } from './statusBar';
 
@@ -12,6 +13,7 @@ let extensionContext: vscode.ExtensionContext | null = null;
 let gitoContext: GitoRecording | null = null
 let statusBarItemsContext: StatusBarItems | null = null;
 let playbackSpeedContext: number = 1;
+let globalStoreContext: GlobalStore|undefined;
 
 export const setExtensionContext = (
 	_extensionContext: vscode.ExtensionContext
@@ -39,6 +41,20 @@ export const getPlaybackSpeedContext = (): number=> {
 	}
 
 	return playbackSpeedContext;
+};
+
+export const setGlobalStoreContext = (
+	_globalStoreContext: GlobalStore
+) => {
+	globalStoreContext = _globalStoreContext;
+};
+
+export const getGlobalStoreContext = (): GlobalStore=> {
+	if (!globalStoreContext) {
+		throw new Error('globalStore context initialize failed!');
+	}
+
+	return globalStoreContext;
 };
 
 

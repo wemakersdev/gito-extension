@@ -1,7 +1,7 @@
 
 import * as vscode from 'vscode';
 import { uid } from "uid";
-import { getPlaybackSpeedContext, setExtensionContext, setStatusBarItemsContext, setPlaybackSpeedContext } from './helpers/context';
+import { getPlaybackSpeedContext, setExtensionContext, setStatusBarItemsContext, setPlaybackSpeedContext, setGlobalStoreContext } from './helpers/context';
 import { upload } from './helpers/upload';
 import { linkWebsocketToVscodeTerminal, registerTerminalProfile, requestTerminalFromServer } from './helpers/terminal';
 
@@ -14,6 +14,7 @@ import { playGito } from './helpers/player';
 import { registerTextDocumentContentProvider } from './helpers/textDocumentContentProvider';
 import startRecording from './commands/recording/start';
 import { GitoExplorerProvider } from './views/GitoExplorer';
+import { GlobalStore } from './helpers/globalStore';
 
 let recording: any;
 
@@ -22,9 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
 	setExtensionContext(context);
 	registerTextDocumentContentProvider();
 	const statusBarItems = initStatusBar();
+	const globalStore = new GlobalStore(context);
 	setStatusBarItemsContext(statusBarItems);
+	setGlobalStoreContext(globalStore);
 
-	vscode.window.registerTreeDataProvider("gito-files", new GitoExplorerProvider("asdas"));
+	vscode.window.registerTreeDataProvider("gito-files", new GitoExplorerProvider(context));
 
 
 	registerCommand('gito-new.startRecording', async () => {
@@ -36,17 +39,8 @@ export function activate(context: vscode.ExtensionContext) {
 				vscode.window.showInformationMessage(`Info: Started Recording`);
 			}else{
 				await recording.stop();
-				const url = await recording.upload();
-				statusBarItems.handleRecordingStopUpdate()
-				const _url = new URL(url);
-				const newUrl = _url.pathname.replace("/data/", "")
-				inform(`Gito Url: gito.dev/${newUrl}`, [{
-					string: "Copy url",
-					callback: async () =>{
-						await executeCommand("gito-new.copy-to-clipboard", `gito.dev/${newUrl}`);	
-						inform(`Copied!`);
-					}
-				}]);
+				await recording.upload();
+				statusBarItems.handleRecordingStopUpdate();
 				recording = undefined;
 			}
 		} catch (err: any) {
@@ -121,19 +115,8 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand("gito-new.stopRecording", async () => {
 		statusBarItems.handleRecordingStopUpdate();
 		await recording.stop();
-		const url = await recording.upload();
-
-		const _url = new URL(url);
-		const newUrl = _url.pathname.replace("/data/", "")
-		inform(`Gito Url: gito.dev/${newUrl}`, [{
-			string: "Copy url",
-			callback: async () =>{
-				await executeCommand("gito-new.copy-to-clipboard", `gito.dev/${newUrl}`);	
-				inform(`Copied!`);
-			}
-		}]);
-
-		recording = undefined
+		await recording.upload();
+		recording = undefined;
 	});
 	
 	
