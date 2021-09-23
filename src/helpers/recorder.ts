@@ -26,6 +26,7 @@ interface IGitoRecording {
 	browserUrl?: string|undefined
 	audio?: string
 	id?: string
+	name?: string
 
 	readonly createdBy?: string
 	readonly createdAt?: number
@@ -308,10 +309,11 @@ class GitoRecording {
 
 }
 
-async function recordGito() {
+async function recordGito(options: Partial<IGitoRecording> = {}) {
 	try {
 		const gitoRecording = new GitoRecording({
 			recording: [],
+			...options
 		});
 		gitoRecording.start();
 

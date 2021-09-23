@@ -15,6 +15,7 @@ import { registerTextDocumentContentProvider } from './helpers/textDocumentConte
 import startRecording from './commands/recording/start';
 import { GitoExplorerProvider } from './views/GitoExplorer';
 import { GlobalStore } from './helpers/globalStore';
+import { getUserInput } from './helpers/userInput';
 
 let recording: any;
 
@@ -33,8 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
 	registerCommand('gito-new.startRecording', async () => {
 		try {
 			if(!recording){
-
-				recording = await recordGito();
+				const name = await getUserInput("Enter a name for your gito", "name for gito");
+				recording = await recordGito({
+					name 
+				});
 				statusBarItems.handleRecordingStartUpdate();
 				vscode.window.showInformationMessage(`Info: Started Recording`);
 			}else{
