@@ -23,7 +23,7 @@
 				{
 					"id": "gito-explorer",
 					"title": "Gito Explorer",
-					"icon": "media/gito-logo.svg",
+					"icon": "src/media/gito-logo.svg",
 					"contextualTitle": "Gito files explorer"
 				}
 			]
