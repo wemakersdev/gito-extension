@@ -13,14 +13,20 @@ import { inform } from './helpers/notifications';
 import { playGito } from './helpers/player';
 import { registerTextDocumentContentProvider } from './helpers/textDocumentContentProvider';
 import startRecording from './commands/recording/start';
+import { GitoExplorerProvider } from './views/GitoExplorer';
 
 let recording: any;
 
 export function activate(context: vscode.ExtensionContext) {
+
 	setExtensionContext(context);
 	registerTextDocumentContentProvider();
 	const statusBarItems = initStatusBar();
 	setStatusBarItemsContext(statusBarItems);
+
+	vscode.window.registerTreeDataProvider("gito-files", new GitoExplorerProvider("asdas"));
+
+
 	registerCommand('gito-new.startRecording', async () => {
 		try {
 			if(!recording){
@@ -132,8 +138,7 @@ export function activate(context: vscode.ExtensionContext) {
 	
 	
 	handleTerminal(context);
-	executeCommand("github1s.vscode.get-browser-url").then(async (url:any) => {
-		
+	executeCommand("github1s.vscode.get-browser-url").then(async (url:any) => {	
 		try{
 			if(!url) {
 				return;

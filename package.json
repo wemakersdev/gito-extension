@@ -12,11 +12,33 @@
 	"activationEvents": [
 		"onCommand:gito-new.startRecording",
 		"onCommand:gito-new.createTerminal",
-		"onStartupFinished"
+		"onStartupFinished",
+		"onView:gito-explorer"
 	],
 	"main": "./dist/extension.js",
 	"browser": "./dist/extension.js",
 	"contributes": {
+		"viewsContainers": {
+			"activitybar": [
+				{
+					"id": "gito-explorer",
+					"title": "Gito Explorer",
+					"icon": "media/gito-logo.svg",
+					"contextualTitle": "Gito files explorer"
+				}
+			]
+		},
+
+		"views": {
+			"gito-explorer": [
+				{
+					"id": "gito-files",
+					"name": "All gito files",
+					"icon": "media/dep.svg",
+					"contextualTitle": "Gito Explorer"
+				}
+			]
+		},
 		"keybindings": [
 			{
 				"key": "alt+g",
@@ -114,8 +136,6 @@
 				"category": "gito-new"
 			}
 		],
-
-		
 		"terminal": {
 			"profiles": [
 				{
