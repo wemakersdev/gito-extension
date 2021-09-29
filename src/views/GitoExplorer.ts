@@ -25,7 +25,7 @@ export class GitoExplorerProvider implements vscode.TreeDataProvider<GitoItem> {
 
 		for (let [key, value] of globalState.values) {
 			let _value = value as IGitoMetaData;
-			const gito = new GitoItem(_value.id, _value.name, vscode.TreeItemCollapsibleState.Collapsed)
+			const gito = new GitoItem(_value.name, _value.id, vscode.TreeItemCollapsibleState.Collapsed)
 
 			gitos.push(gito);
 		}

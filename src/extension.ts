@@ -16,6 +16,7 @@ import startRecording from './commands/recording/start';
 import { GitoExplorerProvider } from './views/GitoExplorer';
 import { GlobalStore } from './helpers/globalStore';
 import { getUserInput } from './helpers/userInput';
+import { CatCodingPanel, getWebviewOptions } from './helpers/webview';
 
 let recording: any;
 
@@ -122,6 +123,26 @@ export function activate(context: vscode.ExtensionContext) {
 		recording = undefined;
 	});
 	
+	registerCommand('gito-new.start-cat-coding', async () => {
+		CatCodingPanel.createOrShow(context.extensionUri);
+	});
+
+	registerCommand('gito-new.do-refactor', async () => {
+		if (CatCodingPanel.currentPanel) {
+			CatCodingPanel.currentPanel.doRefactor();
+		}
+	});
+
+	if (vscode.window.registerWebviewPanelSerializer) {
+		// Make sure we register a serializer in activation event
+		vscode.window.registerWebviewPanelSerializer(CatCodingPanel.viewType, {
+			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
+				console.log(`Got state: ${state}`);
+				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
+				CatCodingPanel.revive(webviewPanel, context.extensionUri);
+			}
+		});
+	}
 	
 	handleTerminal(context);
 	executeCommand("github1s.vscode.get-browser-url").then(async (url:any) => {	
@@ -142,6 +163,8 @@ export function activate(context: vscode.ExtensionContext) {
 	}).catch((err:any) => {
 		console.error(err);
 	});
+
+	
 }
 
 export function deactivate() {

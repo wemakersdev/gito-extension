@@ -50,6 +50,7 @@ class GitoRecording {
 	changes:vscode.Range[] = [];
 	browserUrl: string|undefined;
 	id:string = uid();
+	name: string = "untitled";
 
 	private activeTextEditor: vscode.TextEditor | undefined = vscode.window.activeTextEditor;
 	private _dispose: Function[] = [];
@@ -145,7 +146,7 @@ class GitoRecording {
 
 	async saveGitoInformation(gitoMetaData: IGitoMetaData = {
 		id: this.id,
-		name: "sadasd",
+		name: this.name,
 		createdBy: "sadasd",
 		timestamp: Date.now(),
 		size: this.size,

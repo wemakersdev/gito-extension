@@ -13,7 +13,10 @@
 		"onCommand:gito-new.startRecording",
 		"onCommand:gito-new.createTerminal",
 		"onStartupFinished",
-		"onView:gito-explorer"
+		"onView:gito-explorer",
+		"onCommand:catCoding.start",
+		"onCommand:catCoding.doRefactor",
+		"onWebviewPanel:catCoding"
 	],
 	"main": "./dist/extension.js",
 	"browser": "./dist/extension.js",
@@ -132,6 +135,16 @@
 			{
 				"command": "gito-new.increasePlaybackSpeed",
 				"title": "increases playback speed",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.start-cat-coding",
+				"title": "Start cat coding session",
+				"category": "gito-new"
+			},
+			{
+				"command": "gito-new.do-refactor",
+				"title": "Do some refactoring",
 				"category": "gito-new"
 			}
 		],
