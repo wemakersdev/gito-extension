@@ -41,6 +41,8 @@ interface IGitoMetaData{
 	createdBy: string
 	size: number
 	hasAudio: boolean
+	recording: IGitoRecordingItem[] | any[],
+	audio?: string
 }
 
 class GitoRecording {
@@ -151,9 +153,11 @@ class GitoRecording {
 		timestamp: Date.now(),
 		size: this.size,
 		hasAudio: !!this.audio,
+		audio: this.audio,
+		recording: this.recording,
 	}){
 		const globalStore = getGlobalStoreContext();
-		await globalStore.setData(this.id, gitoMetaData)
+		await globalStore.setData(this.id, gitoMetaData);
 	}
 
 	async pause() {

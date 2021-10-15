@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
 	setStatusBarItemsContext(statusBarItems);
 	setGlobalStoreContext(globalStore);
 
-	vscode.window.registerTreeDataProvider("gito-files", new GitoExplorerProvider(context));
+	vscode.window.registerTreeDataProvider("workspace-gitos", new GitoExplorerProvider(context));
 
 
 	registerCommand('gito-new.startRecording', async () => {

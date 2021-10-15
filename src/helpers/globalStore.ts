@@ -19,6 +19,16 @@ class GlobalStore{
 		return await this.setData(key, newVal);
 	}
 
+	async removeAll(){
+		for(let key in this.keys){
+			await this.setData(key, null);
+		}
+	}
+
+	async remove(key: string){
+		await this.setData(key, null);
+	}
+
 
 	get keys(): readonly string[]{
 		return this.context.globalState.keys();
@@ -33,6 +43,8 @@ class GlobalStore{
 
 		return map;
 	}
+
+
 }
 
 

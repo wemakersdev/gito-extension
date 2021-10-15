@@ -34,10 +34,22 @@
 		"views": {
 			"gito-explorer": [
 				{
-					"id": "gito-files",
-					"name": "All gito files",
+					"id": "workspace-gitos",
+					"name": "Workspace Gitos",
 					"icon": "src/media/gito-logo.svg",
-					"contextualTitle": "Gito Explorer"
+					"contextualTitle": "Gito files within a workspace"
+				},
+				{
+					"id": "all-gitos",
+					"name": "All Gitos",
+					"icon": "src/media/gito-logo.svg",
+					"contextualTitle": "All gitos ever recorded"
+				},
+				{
+					"id": "private-gitos",
+					"name": "Private Gitos",
+					"icon": "src/media/gito-logo.svg",
+					"contextualTitle": "private local gitos"
 				}
 			]
 		},
@@ -187,6 +199,7 @@
 		"mocha": "^8.4.0",
 		"ts-loader": "^9.2.2",
 		"typescript": "^4.3.2",
+		"url-loader": "^4.1.1",
 		"vscode-test": "^1.5.2",
 		"webpack": "^5.38.1",
 		"webpack-cli": "^4.7.0"
