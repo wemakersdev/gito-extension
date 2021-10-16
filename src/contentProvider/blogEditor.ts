@@ -2,8 +2,8 @@ import * as vscode from 'vscode';
 import { GlobalStore } from '../helpers/globalStore';
 import { getExtensionContext, getGitoContext, getAuthorContext } from './../helpers/context';
 import btoa from 'btoa';
-import atob from 'atob'
 import { inform } from '../helpers/notifications';
+import { uploadData } from './../helpers/remoteStorage';
 
 
 interface BlogData{
@@ -53,6 +53,13 @@ class DayStore extends GlobalStore{
 		};
 
 		await this.setData(this.key, data);
+		uploadData(this.key, data)
+		.then(res => {
+			console.log(res)
+			inform(`updated blog successfully`);
+		}).catch(err => {
+			inform(`${err.message}`)
+		});
 	}
 
 	async doesExist(): Promise<boolean>{
@@ -127,7 +134,6 @@ function registerBlogEditorContentProvider() {
 				return Buffer.from(store.content);
 			}catch(err){
 				console.error(err);
-				// debugger
 				return Buffer.from(`Start writing your blog post...`)
 			}
 		}
