@@ -3,7 +3,7 @@ import { ExtensionContext } from 'vscode';
 import { getGlobalStoreContext } from '../helpers/context';
 import { IGitoMetaData } from '../helpers/recorder';
 
-const gitoIconUrl = require('!url-loader!!./../media/gito-logo.svg');	
+const gitoIconUrl = require('!url-loader!!./../../resources/icons/gito-logo-light.svg');	
 
 export class GitoExplorerProvider implements vscode.TreeDataProvider<GitoItem> {
 	constructor(private context: ExtensionContext) { }

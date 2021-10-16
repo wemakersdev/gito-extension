@@ -98,7 +98,7 @@ class GitoRecording {
 		const obj = {
 			type: "INITIAL_STATE",
 			...state
-		} as IGitoRecordingItem;
+		} as unknown as IGitoRecordingItem;
 
 		this.recording.push(obj);
 
@@ -251,7 +251,7 @@ class GitoRecording {
 			type: "EDITOR_CHANGE",
 			timestamp: Date.now(),
 			...state
-		} as IGitoRecordingItem;
+		} as unknown as IGitoRecordingItem;
 
 		this.recording.push(obj);
 	}
@@ -269,7 +269,7 @@ class GitoRecording {
 			changes,
 			timestamp: Date.now(),
 			...state
-		} as IGitoRecordingItem;
+		} as unknown as IGitoRecordingItem;
 		this.recording.push(obj);
 	}
 

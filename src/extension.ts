@@ -17,6 +17,7 @@ import { GitoExplorerProvider } from './views/GitoExplorer';
 import { GlobalStore } from './helpers/globalStore';
 import { getUserInput } from './helpers/userInput';
 import { CatCodingPanel, getWebviewOptions } from './helpers/webview';
+import { BlogViewProvider } from './views/BlogView';
 
 let recording: any;
 
@@ -30,6 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 	setGlobalStoreContext(globalStore);
 
 	vscode.window.registerTreeDataProvider("workspace-gitos", new GitoExplorerProvider(context));
+	vscode.window.registerTreeDataProvider("blog-view", new BlogViewProvider(context));
 
 
 	registerCommand('gito-new.startRecording', async () => {

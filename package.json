@@ -14,6 +14,7 @@
 		"onCommand:gito-new.createTerminal",
 		"onStartupFinished",
 		"onView:gito-explorer",
+		"onView:blog-explorer",
 		"onCommand:catCoding.start",
 		"onCommand:catCoding.doRefactor",
 		"onWebviewPanel:catCoding"
@@ -26,8 +27,14 @@
 				{
 					"id": "gito-explorer",
 					"title": "Gito Explorer",
-					"icon": "src/media/gito-logo.svg",
+					"icon": "resources/icons/gito-logo-light.svg",
 					"contextualTitle": "Gito files explorer"
+				},
+				{
+					"id": "blog-explorer",
+					"title": "Blog Explorer",
+					"icon": "resources/icons/blog-explorer-light.svg",
+					"contextualTitle": "Daily blogs explorer"
 				}
 			]
 		},
@@ -36,20 +43,28 @@
 				{
 					"id": "workspace-gitos",
 					"name": "Workspace Gitos",
-					"icon": "src/media/gito-logo.svg",
+					"icon": "resources/icons/gito-logo-light.svg",
 					"contextualTitle": "Gito files within a workspace"
 				},
 				{
 					"id": "all-gitos",
 					"name": "All Gitos",
-					"icon": "src/media/gito-logo.svg",
+					"icon": "resources/icons/gito-logo-light.svg",
 					"contextualTitle": "All gitos ever recorded"
 				},
 				{
 					"id": "private-gitos",
 					"name": "Private Gitos",
-					"icon": "src/media/gito-logo.svg",
+					"icon": "resources/icons/gito-logo-light.svg",
 					"contextualTitle": "private local gitos"
+				}
+			],
+			"blog-explorer": [
+				{
+					"id": "blog-view",
+					"name": "Daily blogs",
+					"icon": "resources/icons/blog-explorer-light.svg",
+					"contextualTitle": "Write daily blogs"
 				}
 			]
 		},
@@ -205,8 +220,10 @@
 		"webpack-cli": "^4.7.0"
 	},
 	"dependencies": {
+		"atob": "^2.1.2",
 		"axios": "^0.21.4",
 		"blob-polyfill": "^5.0.20210201",
+		"btoa": "^1.2.1",
 		"dayjs": "^1.10.7",
 		"moment": "^2.29.1",
 		"node-fetch": "^2.6.1",
