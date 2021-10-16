@@ -58,7 +58,7 @@ class DayStore extends GlobalStore{
 			console.log(res)
 			inform(`updated blog successfully`);
 		}).catch(err => {
-			inform(`${err.message}`)
+			inform(`${err.message}`);
 		});
 	}
 
@@ -98,6 +98,7 @@ function registerBlogEditorContentProvider() {
 		watch(uri: vscode.Uri, {exclude, recursive}:any): any{
 			return new vscode.Disposable(() => {});
 		}
+		
 
 		stat(uri: vscode.Uri): vscode.FileStat{
 			return {
