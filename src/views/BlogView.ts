@@ -66,12 +66,20 @@ class BlogItem extends vscode.TreeItem {
 		this.command = {
 			title: "open blog editor file",
 			command: "vscode.open",
-			arguments: [vscode.Uri.parse(`blogeditor://${encodeURI(label)}`)]
+			arguments: [this.uri]
 		};
 
 		this.iconPath = iconPath || {
 			light: path.join(__dirname,"..", "resources",'icons', 'blog-explorer-dark.svg'),
 			dark: path.join(__dirname,"..", "resources",'icons', 'blog-explorer-light.svg'),
 		};
+	}
+
+	get uri(){
+		const uri = vscode.Uri.from({
+			scheme: "blog-editor",
+			path: "/" + this.label.toString()
+		});
+		return uri;
 	}
 }

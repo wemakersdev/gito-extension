@@ -18,6 +18,7 @@ import { GlobalStore } from './helpers/globalStore';
 import { getUserInput } from './helpers/userInput';
 import { CatCodingPanel, getWebviewOptions } from './helpers/webview';
 import { BlogViewProvider } from './views/BlogView';
+import { registerBlogEditorContentProvider } from './contentProvider/blogEditor';
 
 let recording: any;
 
@@ -25,6 +26,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	setExtensionContext(context);
 	registerTextDocumentContentProvider();
+	registerBlogEditorContentProvider();
 	const statusBarItems = initStatusBar();
 	const globalStore = new GlobalStore(context);
 	setStatusBarItemsContext(statusBarItems);
