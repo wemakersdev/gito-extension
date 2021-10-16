@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { GlobalStore } from '../helpers/globalStore';
-import { getExtensionContext, getGitoContext } from './../helpers/context';
+import { getExtensionContext, getGitoContext, getAuthorContext } from './../helpers/context';
 import btoa from 'btoa';
 import atob from 'atob'
 import { inform } from '../helpers/notifications';
@@ -8,8 +8,8 @@ import { inform } from '../helpers/notifications';
 
 interface BlogData{
 	content: string,
-	created: number,
-	updated: number,
+	createdAt: number,
+	updatedAt: number,
 	authorId: string
 }
 
@@ -18,6 +18,9 @@ class DayStore extends GlobalStore{
 	public day:string;
 	public key: string;
 	public content: string;
+	public createdAt: number;
+	public updatedAt: number;
+	public authorId: string;
 
 	constructor({
 		day
@@ -31,13 +34,37 @@ class DayStore extends GlobalStore{
 
 
 	async save(){
-		await this.setData(this.key, this.content);
+
+		try{
+			if(!await this.doesExist()){
+				this.createdAt = Date.now();	
+			}
+		}catch(err){
+			console.error(err);
+		}
+
+		const author = getAuthorContext();
+
+		const data: BlogData = {
+			content: this.content,
+			createdAt: this.createdAt,
+			updatedAt: Date.now(),
+			authorId: author.id
+		};
+
+		await this.setData(this.key, data);
 	}
 
+	async doesExist(): Promise<boolean>{
+		const data = <BlogData>this.getData(this.key);
+		return Boolean(data);
+	}
+
+
 	async load(){
-		const data = this.getData(this.key);
+		const data = <BlogData>this.getData(this.key);
 		if(data){
-			this.content = data as string;
+			Object.assign(this, data);
 			return this;
 		}else{
 			throw new Error(`No data found for the day ${this.day}`);
@@ -59,7 +86,6 @@ function registerBlogEditorContentProvider() {
 		onDidChangeFile(...args:any):any{}
 		readDirectory(...args:any):any{}
 		createDirectory(...args:any):any{}
-		// writeFile(...args:any):any{}
 		delete(...args:any):any{}
 		rename(...args:any):any{}
 		watch(uri: vscode.Uri, {exclude, recursive}:any): any{

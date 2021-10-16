@@ -9,11 +9,19 @@ import { GlobalStore } from './globalStore';
 import { GitoRecording } from './recorder';
 import { StatusBarItems } from './statusBar';
 
+export interface Author {
+	id: string
+	username?: string,
+	email?: string
+	subscriptions?: any[]
+}
+
 let extensionContext: vscode.ExtensionContext | null = null;
 let gitoContext: GitoRecording | null = null
 let statusBarItemsContext: StatusBarItems | null = null;
 let playbackSpeedContext: number = 1;
 let globalStoreContext: GlobalStore|undefined;
+let authorContext: Author|undefined;
 
 export const setExtensionContext = (
 	_extensionContext: vscode.ExtensionContext
@@ -27,6 +35,19 @@ export const getExtensionContext = (): vscode.ExtensionContext => {
 	}
 
 	return extensionContext;
+};
+
+export const setAuthorContext = (
+	_authorContext: Author
+) => {
+	authorContext = _authorContext;
+};
+
+export const getAuthorContext = (): Author => {
+	if (!authorContext) {
+		throw new Error('author context initialize failed!');
+	}
+	return authorContext;
 };
 
 export const setPlaybackSpeedContext = (
