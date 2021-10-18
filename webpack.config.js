@@ -4,7 +4,7 @@
 
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
-// const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 
 
 const webpack = require('webpack');
@@ -57,7 +57,7 @@ const config = {
         "Blob": ["blob-polyfill", "Blob"],
       })
     ]: [
-      	// new NodePolyfillPlugin()
+      	new NodePolyfillPlugin(),
         new webpack.ProvidePlugin({
           window: 'global/window',
       }),
