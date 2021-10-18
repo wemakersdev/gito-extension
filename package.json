@@ -238,6 +238,7 @@
 		"blob-polyfill": "^5.0.20210201",
 		"btoa": "^1.2.1",
 		"dayjs": "^1.10.7",
+		"global": "^4.4.0",
 		"moment": "^2.29.1",
 		"node-fetch": "^2.6.1",
 		"path-browserify": "^1.0.1",

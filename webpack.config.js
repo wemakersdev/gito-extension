@@ -58,6 +58,9 @@ const config = {
       })
     ]: [
       	// new NodePolyfillPlugin()
+        new webpack.ProvidePlugin({
+          window: 'global/window',
+      }),
     ])
 
     // new CopyPlugin({
