@@ -33,7 +33,7 @@ export class StatusBarItems{
 		const item = this.get(id);
 		
 		if(!item) {
-			throw new Error(`Item for passed id doesn't exists`)
+			throw new Error(`Item for passed id doesn't exists: ${id}`);
 		}else{	
 			for(let key in options){
 				(item as any)[key] = (options as any)[key];
@@ -101,7 +101,7 @@ export class StatusBarItems{
 
 export function initStatusBar(){
 
-	const items: IStatusBarItem[] = ["record", "pause", "resume", "timer", "play", "stop", "speed"].map((id:string) => {
+	const items: IStatusBarItem[] = ["record", "pause", "resume", "timer", "play", "stop", "speed", "blog-state"].map((id:string) => {
 		return {
 			id,
 			item: StatusBarItems.create(vscode.StatusBarAlignment.Left,0)
@@ -146,6 +146,12 @@ export function initStatusBar(){
 			command: "gito-new.increasePlaybackSpeed"
 		},
 	});
+
+	statusBarItems.set("blog-state", {
+		text: "synced",
+		tooltip: "Current blog is synced",
+	});
+
 
 
 	statusBarItems.show("record");

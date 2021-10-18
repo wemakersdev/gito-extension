@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { GlobalStore } from '../helpers/globalStore';
-import { getExtensionContext, getGitoContext, getAuthorContext } from './../helpers/context';
+import { getExtensionContext, getGitoContext, getAuthorContext, getStatusBarItemsContext } from './../helpers/context';
 import btoa from 'btoa';
 import { inform } from '../helpers/notifications';
 import { uploadData } from './../helpers/remoteStorage';
@@ -52,14 +52,36 @@ class DayStore extends GlobalStore{
 			authorId: author.id
 		};
 
+		const statusBarItems = getStatusBarItemsContext();
+
 		await this.setData(this.key, data);
+
+
+		statusBarItems.update("blog-state", (item) => {
+			return {
+				...item,
+				text: "$(sync~spin) Syncing"
+			};
+		})
+
+		statusBarItems.show("blog-state");
+
 		uploadData(this.key, data)
-		.then(res => {
-			console.log(res)
-			inform(`updated blog successfully`);
-		}).catch(err => {
-			inform(`${err.message}`);
-		});
+			.then(res => {
+				console.log(res);
+				inform(`updated blog successfully`);
+
+				statusBarItems.update("blog-state", (item) => {
+					return {
+						...item,
+						text: "$(pass-filled) Synced"
+					};
+				});
+
+				setTimeout(() => statusBarItems.hide("blog-state"), 2000);
+			}).catch(err => {
+				inform(`${err.message}`);
+			});
 	}
 
 	async doesExist(): Promise<boolean>{
@@ -98,7 +120,7 @@ function registerBlogEditorContentProvider() {
 		watch(uri: vscode.Uri, {exclude, recursive}:any): any{
 			return new vscode.Disposable(() => {});
 		}
-		
+
 
 		stat(uri: vscode.Uri): vscode.FileStat{
 			return {
@@ -108,6 +130,7 @@ function registerBlogEditorContentProvider() {
 				type: vscode.FileType.File
 			};
 		}
+
 
 	 	async writeFile(uri: vscode.Uri, content: Buffer, {
 			create,

@@ -3,6 +3,7 @@ import { GlobalStore } from './globalStore';
 import { setAuthorContext } from './context';
 import * as vscode from 'vscode'
 
+
 const randomWords = require("random-words");
 
 const AUTHOR_STORAGE_KEY_NAME = "author";
