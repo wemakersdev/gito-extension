@@ -62,14 +62,13 @@ class DayStore extends GlobalStore{
 				...item,
 				text: "$(sync~spin) Syncing"
 			};
-		})
+		});
 
 		statusBarItems.show("blog-state");
 
 		uploadData(this.key, data)
 			.then(res => {
 				console.log(res);
-				inform(`updated blog successfully`);
 
 				statusBarItems.update("blog-state", (item) => {
 					return {

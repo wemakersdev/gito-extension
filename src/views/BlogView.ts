@@ -35,7 +35,7 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 		}
 		return days.map(day => {
 			return new BlogItem({
-				label: day,
+				label: day + ".md",
 				tooltip: `Blob created at ${day}`,
 				collapsibleState: vscode.TreeItemCollapsibleState.None
 			});
