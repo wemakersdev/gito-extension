@@ -80,7 +80,7 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 		let days = this.getAllDaysWithContent();
 	
 		if(!days[0] || !days[0].includes(this.getTodayStr())){
-			days = [this.getTodayStr, ...days];
+			days = [this.getTodayStr(), ...days];
 		}
 		return days.map(day => {
 			return new BlogItem({
