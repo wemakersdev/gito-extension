@@ -68,11 +68,11 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 		const store = getGlobalStoreContext();
 		return store.keys.map(item =>{
 			try{
-				return atob(item)
+				return atob(item);
 			}catch(err){
-				return false
+				return false;
 			}
-		}).filter(item =>item.match(/.md$/));
+		}).filter(item =>item && item.match(/.md$/));
 	}
 
 	getDays(){
