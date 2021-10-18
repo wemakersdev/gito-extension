@@ -138,7 +138,8 @@ function registerBlogEditorContentProvider() {
 			try{
 				const path = getPathFromUri(uri);
 				const store = new DayStore({day: path});
-				store.content = content.toString();
+				store.content = content.toString("utf-8");
+				console.log({buf: content});
 				await store.save();
 			}catch(err){
 				inform(`${err.message}`);
