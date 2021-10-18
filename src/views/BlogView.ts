@@ -23,13 +23,45 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 		return element;
 	}
 
-	getChildren(element?: BlogItem | CollapsibleItem): Thenable<BlogItem[]> {
+	getChildren(element?: BlogItem | CollapsibleItem): Thenable<any[]> {
 		if(!element){
-
-			return Promise.resolve(this.getDays(0, 16));
+			return Promise.resolve(this.getMonths(this.getDays()));
 		}else{
-			return Promise.resolve([]);
+			return Promise.resolve((<CollapsibleItem>element).days);
 		}
+	}
+
+	getMonths(days: BlogItem[]){
+		// debugger
+		const months = {};
+
+		for(let day of days){
+			const dayStr = day.label.toString().replace(".md", "");
+
+			const month = dayjs(dayStr, "LL").format("MMMM");
+
+			if(!months[month]){
+				months[month] = [day];
+			}else{
+				months[month].push(day);
+			}
+		}
+
+		let monthlyItems: CollapsibleItem[] = [];
+
+		for(let key in months){
+			const blogItems = months[key]
+			const item = new CollapsibleItem({
+				label: key,
+				collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+				description: `posts: ${blogItems && blogItems.length}`,
+				days: blogItems
+			});
+
+			monthlyItems.push(item);
+		}
+
+		return monthlyItems
 	}
 
 	getAllDaysWithContent(){
@@ -43,7 +75,7 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 		}).filter(item =>item.match(/.md$/));
 	}
 
-	getDays(start: number, end: number){
+	getDays(){
 
 		let days = this.getAllDaysWithContent();
 	
@@ -54,7 +86,7 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 			return new BlogItem({
 				label: day,
 				tooltip: `Blob created at ${day}`,
-				collapsibleState: vscode.TreeItemCollapsibleState.None
+				collapsibleState: vscode.TreeItemCollapsibleState.None,
 			});
 		});
 	}
@@ -86,23 +118,28 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 class CollapsibleItem extends vscode.TreeItem {
 
 	public type: string;
+	public days: BlogItem[]
 	constructor({
 		label,
 		description,
 		collapsibleState = vscode.TreeItemCollapsibleState.Collapsed,
 		tooltip = "tooltip",
-		type
+		type,
+		days
 	}: {
 		label: string,
 		description?: string,
 		collapsibleState: vscode.TreeItemCollapsibleState,
 		tooltip?: string,
-		type?: string
+		type?: string,
+		days?: BlogItem[]
 	}) {
 		super(label, collapsibleState);
 		this.tooltip = tooltip;
 		this.description = description;
 		this.type = type;
+
+		this.days = days;
 	}
 }
 
