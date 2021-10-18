@@ -4,6 +4,8 @@
 
 const path = require('path');
 const CopyPlugin = require("copy-webpack-plugin");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
+
 
 const webpack = require('webpack');
 const target = process.env.TARGET || "node";
@@ -53,7 +55,9 @@ const config = {
         "WebSocket": ["websocket-polyfill"],
         "Blob": ["blob-polyfill", "Blob"],
       })
-    ]: [])
+    ]: [
+      	new NodePolyfillPlugin()
+    ])
 
     // new CopyPlugin({
     //   patterns: [
