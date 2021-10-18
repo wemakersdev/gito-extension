@@ -77,6 +77,8 @@ class DayStore extends GlobalStore{
 					};
 				});
 
+				inform(`synced ${author.id}/${this.key}`);
+
 				setTimeout(() => statusBarItems.hide("blog-state"), 2000);
 			}).catch(err => {
 				inform(`${err.message}`);

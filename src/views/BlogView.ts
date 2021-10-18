@@ -32,7 +32,6 @@ export class BlogViewProvider implements vscode.TreeDataProvider<BlogItem> {
 	}
 
 	getMonths(days: BlogItem[]){
-		// debugger
 		const months = {};
 
 		for(let day of days){
