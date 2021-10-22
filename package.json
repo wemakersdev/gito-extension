@@ -65,18 +65,6 @@
 					"name": "Daily blogs",
 					"icon": "resources/icons/blog-explorer-light.svg",
 					"contextualTitle": "Write daily blogs"
-				},
-				{
-					"id": "blog-view-weekly",
-					"name": "Weekly blogs",
-					"icon": "resources/icons/blog-explorer-light.svg",
-					"contextualTitle": "Write daily blogs"
-				},
-				{
-					"id": "blog-view-monthly",
-					"name": "Monthly blogs",
-					"icon": "resources/icons/blog-explorer-light.svg",
-					"contextualTitle": "Write daily blogs"
 				}
 			]
 		},
