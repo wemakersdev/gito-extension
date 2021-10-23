@@ -20,6 +20,7 @@ import { CatCodingPanel, getWebviewOptions } from './helpers/webview';
 import { BlogViewProvider } from './views/BlogView';
 import { registerBlogEditorContentProvider } from './contentProvider/blogEditor';
 import { handleAuthor } from './helpers/author';
+import { broadcastMessageHandler } from './helpers/broadcast';
 
 let recording: any;
 
@@ -33,6 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 	setStatusBarItemsContext(statusBarItems);
 	setGlobalStoreContext(globalStore);
 	handleAuthor(context);
+	broadcastMessageHandler(context);
 
 	vscode.window.registerTreeDataProvider("workspace-gitos", new GitoExplorerProvider(context));
 	vscode.window.registerTreeDataProvider("blog-view", new BlogViewProvider(context));
