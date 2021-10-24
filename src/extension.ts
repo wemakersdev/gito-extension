@@ -16,7 +16,7 @@ import startRecording from './commands/recording/start';
 import { GitoExplorerProvider } from './views/GitoExplorer';
 import { GlobalStore } from './helpers/globalStore';
 import { getUserInput } from './helpers/userInput';
-import { CatCodingPanel, getWebviewOptions } from './helpers/webview';
+import { Dashboard, getWebviewOptions } from './helpers/webview';
 import { BlogViewProvider } from './views/BlogView';
 import { registerBlogEditorContentProvider } from './contentProvider/blogEditor';
 import { handleAuthor } from './helpers/author';
@@ -131,23 +131,23 @@ export function activate(context: vscode.ExtensionContext) {
 		recording = undefined;
 	});
 	
-	registerCommand('gito-new.start-cat-coding', async () => {
-		CatCodingPanel.createOrShow(context.extensionUri);
+	registerCommand('gito-new.open-dashboard', async () => {
+		Dashboard.createOrShow(context.extensionUri);
 	});
 
 	registerCommand('gito-new.do-refactor', async () => {
-		if (CatCodingPanel.currentPanel) {
-			CatCodingPanel.currentPanel.doRefactor();
+		if (Dashboard.currentPanel) {
+			Dashboard.currentPanel.doRefactor();
 		}
 	});
 
 	if (vscode.window.registerWebviewPanelSerializer) {
 		// Make sure we register a serializer in activation event
-		vscode.window.registerWebviewPanelSerializer(CatCodingPanel.viewType, {
+		vscode.window.registerWebviewPanelSerializer(Dashboard.viewType, {
 			async deserializeWebviewPanel(webviewPanel: vscode.WebviewPanel, state: any) {
 				console.log(`Got state: ${state}`);
 				webviewPanel.webview.options = getWebviewOptions(context.extensionUri);
-				CatCodingPanel.revive(webviewPanel, context.extensionUri);
+				Dashboard.revive(webviewPanel, context.extensionUri);
 			}
 		});
 	}

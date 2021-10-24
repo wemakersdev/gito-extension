@@ -3,8 +3,9 @@
 </script>
 
 <script lang="ts">
-	
+	import Onboard from "../components/Onboard.svelte";
 </script>
 
-
-Start building your component
+<div>
+	<Onboard />
+</div>

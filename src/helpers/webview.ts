@@ -1,4 +1,6 @@
 import * as vscode from 'vscode';
+//@ts-ignore
+import html from '!!raw-loader!./../dashboard/dist/index.html'
 
 const cats = {
 	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
@@ -6,24 +8,27 @@ const cats = {
 	'Testing Cat': 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif'
 };
 
+
+
 export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
+
 	return {
 		// Enable javascript in the webview
 		enableScripts: true,
 
 		// And restrict the webview to only loading content from our extension's `media` directory.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'client')]
+		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'src', 'dashboard', "dist")]
 	};
 }
 
 /**
  * Manages cat coding webview panels
  */
-export class CatCodingPanel {
+export class Dashboard {
 	/**
 	 * Track the currently panel. Only allow a single panel to exist at a time.
 	 */
-	public static currentPanel: CatCodingPanel | undefined;
+	public static currentPanel: Dashboard | undefined;
 
 	public static readonly viewType = 'catCoding';
 
@@ -37,24 +42,24 @@ export class CatCodingPanel {
 			: undefined;
 
 		// If we already have a panel, show it.
-		if (CatCodingPanel.currentPanel) {
-			CatCodingPanel.currentPanel._panel.reveal(column);
+		if (Dashboard.currentPanel) {
+			Dashboard.currentPanel._panel.reveal(column);
 			return;
 		}
 
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
-			CatCodingPanel.viewType,
+			Dashboard.viewType,
 			'Cat Coding',
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
 
-		CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionUri);
+		Dashboard.currentPanel = new Dashboard(panel, extensionUri);
 	}
 
 	public static revive(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
-		CatCodingPanel.currentPanel = new CatCodingPanel(panel, extensionUri);
+		Dashboard.currentPanel = new Dashboard(panel, extensionUri);
 	}
 
 	private constructor(panel: vscode.WebviewPanel, extensionUri: vscode.Uri) {
@@ -100,7 +105,7 @@ export class CatCodingPanel {
 	}
 
 	public dispose() {
-		CatCodingPanel.currentPanel = undefined;
+		Dashboard.currentPanel = undefined;
 
 		// Clean up our resources
 		this._panel.dispose();
@@ -140,29 +145,31 @@ export class CatCodingPanel {
 
 	private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
 		// Local path to main script run in the webview
-		const scriptPathOnDisk = vscode.Uri.joinPath(this._extensionUri, 'client', 'public', "build", "bundle.js");
+		const resourcesPathOnDisc = vscode.Uri.joinPath(this._extensionUri, 'src/dashboard/dist/assets');
 
 		// And the uri we use to load this script in the webview
-		const scriptUri = (scriptPathOnDisk).with({ 'scheme': 'vscode-resource' });
+		const resourcesUri = (resourcesPathOnDisc).with({ 'scheme': 'vscode-resource' });
 
-		// Local path to css styles
-		const stylesPathMainPath = vscode.Uri.joinPath(this._extensionUri, 'client', 'public', "build", "bundle.css");
-
-
-		const stylesMainUri = webview.asWebviewUri(stylesPathMainPath);
-		const nonce = getNonce();
-		return `<!DOCTYPE html>
+		return `
+			<!DOCTYPE html>
 			<html lang="en">
 			<head>
-				<meta charset="UTF-8">
-				<meta name="viewport" content="width=device-width, initial-scale=1.0">
-				<link href="${stylesMainUri}" rel="stylesheet">
-				<title>Cat Coding</title>
+				<meta charset="UTF-8" />
+				<style>
+					html, body, iframe{
+						height: 100%;
+						width: 100%;
+						margin: 0;
+						padding: 0;
+						border: 0
+					}
+				</style>
 			</head>
 			<body>
-				<script nonce="${nonce}" src="${scriptUri}"></script>
+					<iframe src="http://localhost:3000"></iframe>
 			</body>
-			</html>`;
+			</html>
+		`
 	}
 }
 
