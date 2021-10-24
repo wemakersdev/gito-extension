@@ -195,8 +195,12 @@
 		"test-watch": "tsc -watch -p ./",
 		"pretest": "yarn run test-compile && yarn run lint",
 		"lint": "eslint src --ext ts",
-		"precompile": "rm -rf ./../../dist/vscode-web/extensions/gito-extension/dist",
-		"test": "node ./out/test/runTest.js"
+		"precompile": "yarn run build:client",
+		"test": "node ./out/test/runTest.js",
+		"build:client": "cd src/dashboard && yarn build",
+		"dev:client": "cd src/dashboard && yarn build",
+		"setup:client": "cd src/dashboard && yarn",
+		"postinstall": "yarn setup:client && yarn build:client"
 	},
 	"devDependencies": {
 		"@types/glob": "^7.1.3",
