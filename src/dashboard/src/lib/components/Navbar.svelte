@@ -1,12 +1,17 @@
-<div class="justify-between mb-2 shadow-lg navbar bg-neutral text-neutral-content rounded-box">
+<script lang="ts">
+	import {Link} from 'svelte-navigator'
+
+</script>
+
+<div class="justify-between mb-2 shadow-lg navbar bg-colors-foreground text-colors-text rounded-box">
 	<div class="hidden px-2 mx-2 navbar-start lg:flex">
 		<span class="text-lg font-bold"> Dashboard </span>
 	</div>
 	<div class="px-2 mx-2 navbar-center">
 		<div class="flex items-stretch">
-			<a class="btn btn-ghost btn-sm rounded-btn" href="#/feed"> Feed </a>
-			<a class="btn btn-ghost btn-sm rounded-btn" href="#/blogs"> Blogs </a>
-			<a class="btn btn-ghost btn-sm rounded-btn" href="#/gitos"> Gitos </a>
+			<Link class="btn btn-ghost btn-sm rounded-btn" to="/feed"> Feed </Link>
+			<Link class="btn btn-ghost btn-sm rounded-btn" to="/blogs"> Blogs </Link>
+			<Link class="btn btn-ghost btn-sm rounded-btn" to="/gitos"> Gitos </Link>
 		</div>
 	</div>
 	<div class="navbar-end">

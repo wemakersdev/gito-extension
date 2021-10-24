@@ -198,7 +198,7 @@
 		"precompile": "yarn run build:client",
 		"test": "node ./out/test/runTest.js",
 		"build:client": "cd src/dashboard && yarn build",
-		"dev:client": "cd src/dashboard && yarn build",
+		"dev:client": "cd src/dashboard && yarn dev",
 		"setup:client": "cd src/dashboard && yarn",
 		"postinstall": "yarn setup:client && yarn build:client"
 	},

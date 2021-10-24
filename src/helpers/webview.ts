@@ -150,26 +150,7 @@ export class Dashboard {
 		// And the uri we use to load this script in the webview
 		const resourcesUri = (resourcesPathOnDisc).with({ 'scheme': 'vscode-resource' });
 
-		return `
-			<!DOCTYPE html>
-			<html lang="en">
-			<head>
-				<meta charset="UTF-8" />
-				<style>
-					html, body, iframe{
-						height: 100%;
-						width: 100%;
-						margin: 0;
-						padding: 0;
-						border: 0
-					}
-				</style>
-			</head>
-			<body>
-					<iframe src="http://localhost:3000"></iframe>
-			</body>
-			</html>
-		`
+		return html.replace(/\/assets\/(.+)/g, `${resourcesUri}/$1`);
 	}
 }
 

@@ -12,16 +12,22 @@
     "@tailwindcss/aspect-ratio": "^0.3.0",
     "@tailwindcss/line-clamp": "^0.2.2",
     "@tailwindcss/typography": "^0.4.1",
+    "@tsconfig/svelte": "^2.0.1",
     "autoprefixer": "^10.2.5",
     "daisyui": "^1.14.7",
     "postcss": "^8.2.8",
     "svelte": "^3.35.0",
+    "svelte-preprocess": "^4.9.8",
     "tailwindcss": "^2.2.17",
     "tailwindcss-debug-screens": "^2.2.0",
     "vite": "^2.1.0",
     "vite-plugin-singlefile": "^0.5.1"
   },
   "dependencies": {
+    "@types/vscode-webview": "^1.57.0",
+    "overmind": "^28.0.1",
+    "overmind-svelte": "^5.0.1",
+    "svelte-navigator": "^3.1.5",
     "svelte-spa-router": "^3.2.0"
   }
 }
