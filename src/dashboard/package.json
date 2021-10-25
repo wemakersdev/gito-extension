@@ -15,6 +15,7 @@
     "@tsconfig/svelte": "^2.0.1",
     "autoprefixer": "^10.2.5",
     "daisyui": "^1.14.7",
+    "msw": "^0.35.0",
     "postcss": "^8.2.8",
     "svelte": "^3.35.0",
     "svelte-preprocess": "^4.9.8",
@@ -25,9 +26,13 @@
   },
   "dependencies": {
     "@types/vscode-webview": "^1.57.0",
+    "@urql/svelte": "^1.3.1",
+    "graphql": "^15.6.1",
     "overmind": "^28.0.1",
     "overmind-svelte": "^5.0.1",
     "svelte-navigator": "^3.1.5",
-    "svelte-spa-router": "^3.2.0"
+    "svelte-spa-router": "^3.2.0",
+    "tiny-emitter": "^2.1.0",
+    "urql": "^2.0.5"
   }
 }

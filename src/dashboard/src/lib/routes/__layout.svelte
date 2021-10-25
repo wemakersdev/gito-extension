@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Navbar from '../components/Navbar.svelte';
-import { state, actions } from '../overmind/store';
+	import { state, } from '../overmind/store';
 </script>
 
 <style>
@@ -15,7 +15,7 @@ import { state, actions } from '../overmind/store';
 	{#if $state.app.navbar.visible}
 		<Navbar />
 	{/if}
-
-	<button on:click="{actions.navbar.toggle}">toggle navbar</button>
-	<slot />
+	<div class="w-full h-full" style="padding-top: {$state.app.navbar.height}px">
+		<slot />
+	</div>
 </div>

@@ -1,16 +1,18 @@
 
-import { createOvermind, IConfiguration } from 'overmind';
+import { createOvermind } from 'overmind';
 import { createMixin } from 'overmind-svelte';
 import { appMetaInfo } from './appMetaInfo';
 import { navbarState, navbarActions } from './navbar';
+import { navigate } from 'svelte-navigator';
+import { blogActions } from './blog';
 
 import type {WebviewApi} from "vscode-webview";
 import type { Writable } from 'svelte/store';
 import type {IContext} from 'overmind'
 import type {INavbarActions, INavbarState} from './navbar'
-import type {AnyFunction, ParametersExceptFirst} from './common'
-
-let acquireVsCodeApi =  (): any=> {}
+import type {AnyFunction, ParametersExceptFirst} from './common';
+import type {IBlogActions} from './blog'
+import type { NavigateOptions} from 'svelte-navigator'
 
 
 export interface FeedItem{
@@ -45,10 +47,13 @@ export interface IState{
 	app: IApp,
 }
 
+
 export interface IOvermind{
 	state: IState,
 	actions: IActions
 }
+
+
 
 export type IAction<P, O> = (context: IContext<IOvermind>, payload: P) => O 
 
@@ -56,13 +61,16 @@ export type IAction<P, O> = (context: IContext<IOvermind>, payload: P) => O
 export interface IActions {
 	fetchFeedItems: IAction<any, any>
 	handleSkipInto: IAction<any, any>,
-	navbar: INavbarActions
+	navbar: INavbarActions,
+	blog: IBlogActions,
+	skipIntro: IAction<any, any>,
+	navigate: IAction<{to: string, navigateOptions?: NavigateOptions}, any>
 }
 
 
 
 
-export type exposedAction<T extends AnyFunction> = (args: ParametersExceptFirst<T>) =>  T
+export type exposedAction<T extends AnyFunction> = (...args: ParametersExceptFirst<T>) =>  T
 
 export type IOvermindAction<T> = {
 	[K in keyof T]: T[K] extends AnyFunction ? exposedAction<T[K]> : IOvermindAction<T[K]>
@@ -74,26 +82,30 @@ const overmind: IOvermind = {
 	vscode: acquireVsCodeApi(),
 	feedItems: [],
 	app: {
-		skipIntro: false,
+		skipIntro: true,
 		navbar: navbarState
 	}
   },	
   actions: {
-    fetchFeedItems: ({state, actions}) => {
-		state.feedItems = [{
-			url: "1",
-			type: "blog",
-		}, {
-			url: "2",
-			type: "gito",
-		}];
+    fetchFeedItems: ({state}) => {
+		
 	},
 
 	handleSkipInto: ({state}) => {
 		state.app.skipIntro = true
 	},
 
-	navbar: navbarActions
+	skipIntro: ({state, actions}) => {
+		actions.handleSkipInto();
+		actions.navigate({to: "/feed"});
+	},
+
+	navigate: ({state}, {to, navigateOptions}) => {
+		navigate(to, navigateOptions);
+	},
+
+	navbar: navbarActions,
+	blog: blogActions
   }
 };
 

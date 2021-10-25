@@ -1,3 +1,5 @@
+
+
 <script>
   import Layout from "./lib/routes/__layout.svelte";
   import BlogsIndex from "./lib/routes/blogs/index.svelte";
@@ -8,9 +10,16 @@
   import Introduction from "./lib/components/Introduction.svelte";
 
   import "./lib/TailwindCSS.svelte";
+  // import {} from './lib/helpers/BackendConnector'
   import { actions, state } from "./lib/overmind/store";
-  import { Router, Route } from "svelte-navigator";
+  import { Router, Route, navigate } from "svelte-navigator";
   import Gito from "./lib/routes/gitos/[gito].svelte";
+
+
+  $: if(!$state.app.skipIntro){
+    // console.log({navigating: true})
+    navigate("/introduction")
+  }
 </script>
 
 <Router>
@@ -19,6 +28,8 @@
       <Route path="introduction">
         <Introduction />
       </Route>
+
+
       <Route path="blog/*">
         <Route path="/">
           <BlogsIndex />

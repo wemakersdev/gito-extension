@@ -1,49 +1,9 @@
 <script>
 	
-	let feedItems = [
-		{
-			type: "blog",
-			href: "/blogs/sadsad",
-			description: "sadasdsad",
-			title: "blog title",
-			author: "author1",
-			tags: ["javascript", "svelte"]
-		},
-
-		{
-			type: "blog",
-			href: "/blogs/sadsad",
-			description: "sadasdsad",
-			title: "blog title",
-			author: "author1",
-			tags: ["javascript", "svelte"]
-		},
-		{
-			type: "blog",
-			href: "/blogs/sadsad",
-			description: "sadasdsad",
-			title: "blog title",
-			author: "author1",
-			tags: ["javascript", "svelte"]
-		},
-		{
-			type: "blog",
-			href: "/blogs/sadsad",
-			description: "sadasdsad",
-			title: "blog title",
-			author: "author1",
-			tags: ["javascript", "svelte"]
-		},
-		{
-			type: "blog",
-			href: "/blogs/sadsad",
-			description: "sadasdsad",
-			title: "blog title",
-			author: "author1",
-			tags: ["javascript", "svelte"]
-		},
-	]
+	let feedItems = []
 </script>
+
+
 {#each feedItems as feedItem}
 	<div class="mt-0 card lg:card-side bordered">
 		<div class="card-body">
