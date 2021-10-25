@@ -10,6 +10,7 @@
 		margin: 0;
 		padding: 0;
 	}
+	
 </style>
 <div class="w-full h-full overflow-auto bg-colors-background text-colors-text" data-theme="dracula">
 	{#if $state.app.navbar.visible}

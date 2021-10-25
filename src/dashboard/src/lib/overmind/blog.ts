@@ -12,7 +12,7 @@ export interface LineMetaInto{
 	downvote: boolean
 }
 
-export interface Blog {
+export interface IBlog {
 	url: string,
 	contentUrl: string,
 	content?: string
@@ -25,8 +25,9 @@ export interface Blog {
 
 export interface IBlogActions{
 	fetchBlogContent: IAction<{url: string}, Promise<string>>,
-	fetchBlogFeed: IAction<{userId: string}, Promise<Blog[]>>
-	fetchBlogFeedWithContent: IAction<{userId: string}, Promise<Blog[]>>
+	fetchBlogFeed: IAction<{userId: string}, Promise<IBlog[]>>
+	fetchBlogFeedWithContent: IAction<{userId: string}, Promise<IBlog[]>>
+	getBlog: IAction<{blogId: string}, Promise<IBlog>>
 }
 
 
@@ -41,11 +42,11 @@ export const blogActions: IBlogActions = {
 		}
 	},
 
-	fetchBlogFeed: async ({}, {userId}): Promise<Blog[]> => {
+	fetchBlogFeed: async ({}, {userId}): Promise<IBlog[]> => {
 		const url = new URL(API_URL);
 		url.pathname = "get-blog-feed";
 		url.searchParams.append("userId", userId);
-		const feed: Blog[] = await fetch(url.href).then(res => res.json());
+		const feed: IBlog[] = await fetch(url.href).then(res => res.json());
 		return feed;
 	},
 
@@ -53,8 +54,7 @@ export const blogActions: IBlogActions = {
 		const url = new URL(API_URL);
 		url.pathname = "get-blog-feed";
 		url.searchParams.append("userId", userId);
-		const feed: Blog[] = await fetch(url.href).then(res => res.json());
-		
+		const feed: IBlog[] = await fetch(url.href).then(res => res.json());
 		const feedWithContent = await Promise.all(feed.map(async item => {
 			try{
 				//@ts-ignore
@@ -68,5 +68,16 @@ export const blogActions: IBlogActions = {
 		}));
 
 		return feedWithContent.filter(item => !item.error);
+	},
+
+	getBlog: async ({state}, {blogId}): Promise<IBlog> => {
+		const url = new URL(API_URL);
+		url.pathname = "/get-blog";
+		url.searchParams.append("blogId", blogId);
+		const blog:IBlog = await fetch(url.href).then(res => {
+			return res.json();
+		});
+
+		return blog;
 	}
 };

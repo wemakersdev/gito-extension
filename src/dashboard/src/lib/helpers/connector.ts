@@ -3,7 +3,7 @@ import { acquireVsCodeApiMock } from '../mocks/acquireVsCodeApiMock'
 import type { AnyFunction } from '../overmind/common';
 import {TinyEmitter} from 'tiny-emitter';
 
-globalThis.acquireVsCodeApi = globalThis.acquireVsCodeApi || acquireVsCodeApiMock
+(globalThis as any).acquireVsCodeApi = globalThis.acquireVsCodeApi || acquireVsCodeApiMock
 
 export interface IMessage<T>{
 	type: string
