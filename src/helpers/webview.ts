@@ -145,10 +145,10 @@ export class Dashboard {
 
 	private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
 		// Local path to main script run in the webview
-		const resourcesPathOnDisc = vscode.Uri.joinPath(this._extensionUri, 'src/dashboard/dist/assets');
+		const resourcesUri = this._panel.webview.asWebviewUri(
+			vscode.Uri.joinPath(this._extensionUri, "src", "dashboard", "dist", "assets")
+		);
 
-		// And the uri we use to load this script in the webview
-		const resourcesUri = (resourcesPathOnDisc).with({ 'scheme': 'vscode-resource' });
 
 		return html.replace(/\/assets\/(.+)/g, `${resourcesUri}/$1`);
 	}

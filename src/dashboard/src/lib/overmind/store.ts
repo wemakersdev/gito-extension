@@ -8,11 +8,11 @@ import { blogActions } from './blog';
 
 import type {WebviewApi} from "vscode-webview";
 import type { Writable } from 'svelte/store';
-import type {IContext} from 'overmind'
+import type {IContext} from 'overmind';
 import type {INavbarActions, INavbarState} from './navbar'
 import type {AnyFunction, ParametersExceptFirst} from './common';
-import type {IBlogActions} from './blog'
-import type { NavigateOptions} from 'svelte-navigator'
+import type {IBlogActions} from './blog';
+import type { NavigateOptions} from 'svelte-navigator';
 
 
 export interface FeedItem{
