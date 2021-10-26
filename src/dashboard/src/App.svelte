@@ -10,18 +10,16 @@
   import Introduction from "./lib/components/Introduction.svelte";
 
   import "./lib/TailwindCSS.svelte";
-  // import {} from './lib/helpers/BackendConnector'
   import { actions, state } from "./lib/overmind/store";
-  import { Router, Route, navigate, Link } from "svelte-navigator";
+  import { Router, Route,} from "svelte-navigator";
   import Gito from "./lib/routes/gitos/[gito].svelte";
 
-  import { createHistory, createMemorySource } from "svelte-navigator";
+  import { createHistory} from "svelte-navigator";
   import createHashSource from "./lib/helpers/hashHistory";
   import { onMount } from "svelte";
 
 	const memoryHistory = createHistory(createHashSource());
   let mounted = false
-
 
   onMount(() => {
     mounted = true

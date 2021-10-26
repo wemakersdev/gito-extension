@@ -1,8 +1,6 @@
 <script lang="ts">
   import { actions, state } from "./../overmind/store";
-  import { Link } from "svelte-navigator";
   import {slide, fade} from 'svelte/transition'
-import { action } from "overmind/lib/operator";
 
   let offsetHeight: number = 0
 
@@ -21,7 +19,7 @@ import { action } from "overmind/lib/operator";
 
 <div in:slide={{duration: 200}} out:fade={{duration: 200}} bind:offsetHeight class="absolute z-50 flex items-center justify-center w-full">
   <ul
-    class="items-stretch px-3 overflow-visible text-sm shadow-lg menu bg-colors-foreground horizontal rounded-box"
+    class="items-stretch px-3 overflow-visible text-xs shadow-lg menu bg-colors-foreground horizontal rounded-box"
   >
   {#each $state.app.navbar.tabs as tab}
   <li class:bordered={$state.app.navbar.active === tab.name}>
@@ -32,7 +30,7 @@ import { action } from "overmind/lib/operator";
               to: tab.name
             });
           }}
-          data-tip="{tab.tooltip}" class="text-xs btn btn-sm btn-ghost tooltip tooltip-bottom" 
+          data-tip="{tab.tooltip}" class="text-xs lowercase btn btn-sm btn-ghost tooltip tooltip-bottom" 
         >
             {tab.label}
         </button>

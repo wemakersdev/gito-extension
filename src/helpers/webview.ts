@@ -2,32 +2,16 @@ import * as vscode from 'vscode';
 //@ts-ignore
 import html from '!!raw-loader!./../dashboard/dist/index.html'
 
-const cats = {
-	'Coding Cat': 'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
-	'Compiling Cat': 'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
-	'Testing Cat': 'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif'
-};
-
-
-
 export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
 
 	return {
-		// Enable javascript in the webview
 		enableScripts: true,
-
-		// And restrict the webview to only loading content from our extension's `media` directory.
-		localResourceRoots: [vscode.Uri.joinPath(extensionUri, 'src', 'dashboard', "dist")]
+		localResourceRoots: []
 	};
 }
 
-/**
- * Manages cat coding webview panels
- */
+
 export class Dashboard {
-	/**
-	 * Track the currently panel. Only allow a single panel to exist at a time.
-	 */
 	public static currentPanel: Dashboard | undefined;
 
 	public static readonly viewType = 'catCoding';
@@ -50,7 +34,7 @@ export class Dashboard {
 		// Otherwise, create a new panel.
 		const panel = vscode.window.createWebviewPanel(
 			Dashboard.viewType,
-			'Cat Coding',
+			'Dashboard',
 			column || vscode.ViewColumn.One,
 			getWebviewOptions(extensionUri),
 		);
@@ -99,15 +83,11 @@ export class Dashboard {
 	}
 
 	public doRefactor() {
-		// Send a message to the webview webview.
-		// You can send any JSON serializable data.
 		this._panel.webview.postMessage({ command: 'refactor' });
 	}
 
 	public dispose() {
 		Dashboard.currentPanel = undefined;
-
-		// Clean up our resources
 		this._panel.dispose();
 
 		while (this._disposables.length) {
@@ -122,34 +102,28 @@ export class Dashboard {
 		const webview = this._panel.webview;
 
 		// Vary the webview's content based on where it is located in the editor.
-		switch (this._panel.viewColumn) {
-			case vscode.ViewColumn.Two:
-				this._updateForCat(webview, 'Compiling Cat');
-				return;
+		// switch (this._panel.viewColumn) {
+		// 	case vscode.ViewColumn.Two:
+		// 		this._updateForCat(webview, 'Compiling Cat');
+		// 		return;
 
-			case vscode.ViewColumn.Three:
-				this._updateForCat(webview, 'Testing Cat');
-				return;
+		// 	case vscode.ViewColumn.Three:
+		// 		this._updateForCat(webview, 'Testing Cat');
+		// 		return;
 
-			case vscode.ViewColumn.One:
-			default:
-				this._updateForCat(webview, 'Coding Cat');
-				return;
-		}
+		// 	case vscode.ViewColumn.One:
+		// 	default:
+		// 		this._updateForCat(webview, 'Coding Cat');
+		// 		return;
+		// }
 	}
 
-	private _updateForCat(webview: vscode.Webview, catName: keyof typeof cats) {
-		this._panel.title = catName;
-		this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
+	private _updateForCat(webview: vscode.Webview) {
+		// this._panel.title = "blog-title-update"
+		// this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
 	}
 
-	private _getHtmlForWebview(webview: vscode.Webview, catGifPath: string) {
-		// Local path to main script run in the webview
-		const resourcesUri = this._panel.webview.asWebviewUri(
-			vscode.Uri.joinPath(this._extensionUri, "src", "dashboard", "dist", "assets")
-		);
-
-
+	private _getHtmlForWebview(webview: vscode.Webview) {
 		return html
 	}
 }
