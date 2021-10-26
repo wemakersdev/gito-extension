@@ -150,7 +150,7 @@ export class Dashboard {
 		);
 
 
-		return html.replace(/\/assets\/(.+)/g, `${resourcesUri}/$1`);
+		return html
 	}
 }
 

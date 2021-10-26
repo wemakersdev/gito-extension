@@ -4,5 +4,15 @@ import { viteSingleFile } from "vite-plugin-singlefile"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [svelte()],
+  plugins: [ viteSingleFile(), svelte()],
+  build: {
+		cssCodeSplit: false,
+		assetsInlineLimit: 100000000,
+		rollupOptions: {
+      output: {
+        inlineDynamicImports: false,
+        manualChunks: () => "everything.js",
+			},
+		},
+	},
 })

@@ -15,6 +15,10 @@
   import { Router, Route, navigate } from "svelte-navigator";
   import Gito from "./lib/routes/gitos/[gito].svelte";
 
+  import { createHistory, createMemorySource } from "svelte-navigator";
+
+	const memoryHistory = createHistory(createMemorySource());
+
 
   $: if(!$state.app.skipIntro){
     // console.log({navigating: true})
@@ -22,7 +26,7 @@
   }
 </script>
 
-<Router>
+<Router history={memoryHistory}>
   <Layout>
     <div>
       <Route path="introduction">
