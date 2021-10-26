@@ -17,13 +17,21 @@
 
   import { createHistory, createMemorySource } from "svelte-navigator";
   import createHashSource from "./lib/helpers/hashHistory";
+  import { onMount } from "svelte";
 
 	const memoryHistory = createHistory(createHashSource());
+  let mounted = false
 
 
-  $: if(!$state.app.skipIntro){
+  onMount(() => {
+    mounted = true
+  })
+
+  $: if(!$state.app.skipIntro && mounted){
     actions.navigate({to: "introduction"})
   }
+
+
 </script>
 
 <Router history={memoryHistory}>

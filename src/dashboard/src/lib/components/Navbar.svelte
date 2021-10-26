@@ -2,6 +2,7 @@
   import { actions, state } from "./../overmind/store";
   import { Link } from "svelte-navigator";
   import {slide, fade} from 'svelte/transition'
+import { action } from "overmind/lib/operator";
 
   let offsetHeight: number = 0
 
@@ -24,13 +25,17 @@
   >
   {#each $state.app.navbar.tabs as tab}
   <li class:bordered={$state.app.navbar.active === tab.name}>
-        <Link 
-          on:click={e => e.preventDefault()}
-          {getProps}
+        <a
+          on:click={e => {
+            e.preventDefault();
+            actions.navigate({
+              to: tab.name
+            });
+          }}
           data-tip="{tab.tooltip}" class="text-xs tooltip tooltip-bottom" 
-          to="/{tab.name}">
+          href="/{tab.name}">
             {tab.label}
-        </Link>
+        </a>
       </li>
     {/each}
   </ul>
