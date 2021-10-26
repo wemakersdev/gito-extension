@@ -22,7 +22,7 @@
 
 
   $: if(!$state.app.skipIntro){
-    actions.navigate({to: "/introduction"})
+    actions.navigate({to: "introduction"})
   }
 </script>
 

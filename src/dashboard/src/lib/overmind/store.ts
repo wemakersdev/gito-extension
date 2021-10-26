@@ -97,7 +97,7 @@ const overmind: IOvermind = {
 
 	skipIntro: ({state, actions}) => {
 		actions.handleSkipInto();
-		actions.navigate({to: "/feed"});
+		actions.navigate({to: "feed"});
 	},
 
 	navigate: ({state}, {to, navigateOptions}) => {
