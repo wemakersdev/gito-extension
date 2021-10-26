@@ -12,7 +12,7 @@
   import "./lib/TailwindCSS.svelte";
   // import {} from './lib/helpers/BackendConnector'
   import { actions, state } from "./lib/overmind/store";
-  import { Router, Route, navigate } from "svelte-navigator";
+  import { Router, Route, navigate, Link } from "svelte-navigator";
   import Gito from "./lib/routes/gitos/[gito].svelte";
 
   import { createHistory, createMemorySource } from "svelte-navigator";
@@ -28,6 +28,10 @@
 
 <Router history={memoryHistory}>
   <Layout>
+    
+      <button on:click={() => navigate("/introduction")}>click</button>
+    
+      <Link to="/introduction">link</Link>
     <div>
       <Route path="introduction">
         <Introduction />
