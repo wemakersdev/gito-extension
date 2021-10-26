@@ -25,17 +25,17 @@ import { action } from "overmind/lib/operator";
   >
   {#each $state.app.navbar.tabs as tab}
   <li class:bordered={$state.app.navbar.active === tab.name}>
-        <a
+        <button
           on:click={e => {
             e.preventDefault();
             actions.navigate({
               to: tab.name
             });
           }}
-          data-tip="{tab.tooltip}" class="text-xs tooltip tooltip-bottom" 
-          href="/{tab.name}">
+          data-tip="{tab.tooltip}" class="text-xs btn btn-sm btn-ghost tooltip tooltip-bottom" 
+        >
             {tab.label}
-        </a>
+        </button>
       </li>
     {/each}
   </ul>
