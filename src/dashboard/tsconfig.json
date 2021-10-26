@@ -18,5 +18,5 @@
     "src/**/*.tsx",
     "src/**/*.svelte",
     "src/main.js"
-  ]
+, "src/lib/helpers/shimProcess.js", "src/lib/helpers/hashHistory.js"  ]
 }

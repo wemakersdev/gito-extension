@@ -16,41 +16,37 @@
   import Gito from "./lib/routes/gitos/[gito].svelte";
 
   import { createHistory, createMemorySource } from "svelte-navigator";
+  import createHashSource from "./lib/helpers/hashHistory";
 
-	const memoryHistory = createHistory(createMemorySource());
+	const memoryHistory = createHistory(createHashSource());
 
 
   $: if(!$state.app.skipIntro){
-    // console.log({navigating: true})
     navigate("/introduction")
   }
 </script>
 
 <Router history={memoryHistory}>
   <Layout>
-    
-      <button on:click={() => navigate("/introduction")}>click</button>
-    
-      <Link to="/introduction">link</Link>
     <div>
       <Route path="introduction">
         <Introduction />
       </Route>
-
-
+      
+      
       <Route path="blog/*">
         <Route path="/">
           <BlogsIndex />
         </Route>
         <Route path=":id" component={Blog} />
       </Route>
-
+      
       <Route path="feed/*">
         <Route path="/">
           <Feed />
         </Route>
       </Route>
-
+      
       <Route path="gito/*">
         <Route path="/">
           <GitosIndex />
