@@ -15,8 +15,6 @@
 	}
 
   $: actions.navbar.setNavbarHeight({height: offsetHeight})
-
-  $: console.log({offsetHeight})
   
 </script>
 
@@ -27,6 +25,7 @@
   {#each $state.app.navbar.tabs as tab}
   <li class:bordered={$state.app.navbar.active === tab.name}>
         <Link 
+          on:click={e => e.preventDefault()}
           {getProps}
           data-tip="{tab.tooltip}" class="text-xs tooltip tooltip-bottom" 
           to="/{tab.name}">

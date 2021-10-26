@@ -82,7 +82,7 @@ const overmind: IOvermind = {
 	vscode: acquireVsCodeApi(),
 	feedItems: [],
 	app: {
-		skipIntro: true,
+		skipIntro: false,
 		navbar: navbarState
 	}
   },	
@@ -101,7 +101,7 @@ const overmind: IOvermind = {
 	},
 
 	navigate: ({state}, {to, navigateOptions}) => {
-		navigate(to, navigateOptions);
+		window.location.hash = to;
 	},
 
 	navbar: navbarActions,
