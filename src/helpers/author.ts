@@ -1,7 +1,10 @@
 import { uid } from 'uid';
 import { GlobalStore } from './globalStore';
-import { setAuthorContext } from './context';
+import { getGqlClientContext, setAuthorContext } from './context';
 import * as vscode from 'vscode'
+import { runQuery, runMutation } from './graphql';
+import { createAuthor } from './mutations';
+import { inform } from './notifications';
 
 
 const randomWords = require("random-words");
@@ -9,24 +12,33 @@ const randomWords = require("random-words");
 const AUTHOR_STORAGE_KEY_NAME = "author";
 
 export interface Author {
-	id: string
-	username?: string,
-	email?: string
-	subscriptions?: any[]
+	id?: string
+	name?: string,
 }
 
 export const generateAuthor = (): Author => {
 	return {
-		id: uid(),
-		username: randomWords(3, { exactly: 3 }).join("-"),
-		email: "",
-		subscriptions: [],
+		name: randomWords(3, { exactly: 3 }).join("-"),
 	};
 };
 
 export const saveAuthor = async (author: Author, context: vscode.ExtensionContext) => {
-	const store = new GlobalStore(context);
-	await store.setData(AUTHOR_STORAGE_KEY_NAME, author);
+	try{
+
+		const store = new GlobalStore(context);
+		const client = getGqlClientContext();
+		const res = await runMutation({client, mutation: createAuthor, variables: {
+			author: [{
+				name: author.name,
+			}]
+		}});
+
+		const id = res.data.addAuthor.author[0].id;
+		author.id = id;
+	  await store.setData(AUTHOR_STORAGE_KEY_NAME, author);
+	}catch(err){
+		inform(`Unable to create user: ${err.message}`);
+	}
 };
 
 
@@ -45,7 +57,7 @@ export const getAuthor = async (context: vscode.ExtensionContext): Promise<Autho
 export const handleAuthor = async (context) => {
 	let author: Author;
 	try {
-		author = await getAuthor(context);;
+		author = await getAuthor(context);
 		if (!author) {
 			throw new Error(`Author not found`)
 		}
@@ -54,6 +66,5 @@ export const handleAuthor = async (context) => {
 		author = generateAuthor();
 		await saveAuthor(author, context);
 	}
-	// debugger
 	setAuthorContext(author);
 };

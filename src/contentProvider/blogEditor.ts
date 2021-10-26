@@ -10,7 +10,8 @@ interface BlogData{
 	content: string,
 	createdAt: number,
 	updatedAt: number,
-	authorId: string
+	authorId: string,
+	id?: string
 }
 
 class DayStore extends GlobalStore{
@@ -54,22 +55,23 @@ class DayStore extends GlobalStore{
 
 		const statusBarItems = getStatusBarItemsContext();
 
-		await this.setData(this.key, data);
-
-
+		
+		
 		statusBarItems.update("blog-state", (item) => {
 			return {
 				...item,
 				text: "$(sync~spin) Syncing"
 			};
 		});
-
+		
 		statusBarItems.show("blog-state");
+		const doesExist = await this.doesExist();
 
-		uploadData(this.key, data)
-			.then(res => {
-				console.log(res);
-
+		uploadData(this.key, data, doesExist)
+		.then(async res => {
+				data.id = res.id;
+				// debugger
+				await this.setData(this.key, data);
 				statusBarItems.update("blog-state", (item) => {
 					return {
 						...item,
@@ -77,7 +79,7 @@ class DayStore extends GlobalStore{
 					};
 				});
 
-				inform(`synced ${author.username}/${this.key}`);
+				inform(`synced ${author.name}/${this.key}`);
 
 				setTimeout(() => statusBarItems.hide("blog-state"), 2000);
 			}).catch(err => {
@@ -142,8 +144,7 @@ function registerBlogEditorContentProvider() {
 				const store = new DayStore({day: path});
 				const temp = Buffer.from(content);
 				store.content = temp.toString("utf-8");
-				debugger
-				console.log({buf: content});
+				
 				await store.save();
 			}catch(err){
 				inform(`${err.message}`);
@@ -153,6 +154,7 @@ function registerBlogEditorContentProvider() {
 		async readFile(uri: vscode.Uri): Promise<Uint8Array> {
 			try{
 				const path = uri.path.replace(/^\//, "");
+				// debugger
 				const store = new DayStore({day: path});
 				await store.load();
 

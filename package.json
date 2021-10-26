@@ -226,18 +226,21 @@
 		"webpack-cli": "^4.7.0"
 	},
 	"dependencies": {
+		"@urql/core": "^2.3.3",
 		"atob": "^2.1.2",
 		"axios": "^0.21.4",
 		"blob-polyfill": "^5.0.20210201",
 		"btoa": "^1.2.1",
 		"dayjs": "^1.10.7",
 		"global": "^4.4.0",
+		"graphql": "^15.6.1",
 		"moment": "^2.29.1",
 		"node-fetch": "^2.6.1",
 		"path-browserify": "^1.0.1",
 		"random-words": "^1.1.1",
 		"remove-files-webpack-plugin": "^1.4.5",
 		"uid": "^2.0.0",
+		"urql": "^2.0.5",
 		"web-file-polyfill": "^1.0.4",
 		"web-streams-polyfill": "^3.1.1",
 		"websocket-polyfill": "0.0.3"

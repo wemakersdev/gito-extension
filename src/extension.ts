@@ -1,7 +1,7 @@
 
 import * as vscode from 'vscode';
 import { uid } from "uid";
-import { getPlaybackSpeedContext, setExtensionContext, setStatusBarItemsContext, setPlaybackSpeedContext, setGlobalStoreContext } from './helpers/context';
+import { getPlaybackSpeedContext, setExtensionContext, setStatusBarItemsContext, setPlaybackSpeedContext, setGlobalStoreContext, setGqlClientContext } from './helpers/context';
 import { upload } from './helpers/upload';
 import { linkWebsocketToVscodeTerminal, registerTerminalProfile, requestTerminalFromServer } from './helpers/terminal';
 
@@ -21,16 +21,20 @@ import { BlogViewProvider } from './views/BlogView';
 import { registerBlogEditorContentProvider } from './contentProvider/blogEditor';
 import { handleAuthor } from './helpers/author';
 import { broadcastMessageHandler } from './helpers/broadcast';
+import { getGqlClient, runQuery } from './helpers/graphql';
 
 let recording: any;
 
 export function activate(context: vscode.ExtensionContext) {
+
 
 	setExtensionContext(context);
 	registerTextDocumentContentProvider();
 	registerBlogEditorContentProvider();
 	const statusBarItems = initStatusBar();
 	const globalStore = new GlobalStore(context);
+	const gqlClient = getGqlClient();
+	setGqlClientContext(gqlClient);
 	setStatusBarItemsContext(statusBarItems);
 	setGlobalStoreContext(globalStore);
 	handleAuthor(context);
@@ -42,6 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	registerCommand('gito-new.startRecording', async () => {
 		try {
+			// debugger
 			if(!recording){
 				const name = await getUserInput("Enter a name for your gito", "name for gito");
 				recording = await recordGito({
@@ -56,6 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
 				recording = undefined;
 			}
 		} catch (err: any) {
+			debugger
 			vscode.window.showInformationMessage(`Error: ${err.message}`);
 		}
 	});

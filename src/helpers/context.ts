@@ -8,13 +8,9 @@ import { GITHUB_OAUTH_TOKEN } from './constants';
 import { GlobalStore } from './globalStore';
 import { GitoRecording } from './recorder';
 import { StatusBarItems } from './statusBar';
+import { Author } from './author';
+import {Client} from 'urql';
 
-export interface Author {
-	id: string
-	username?: string,
-	email?: string
-	subscriptions?: any[]
-}
 
 let extensionContext: vscode.ExtensionContext | null = null;
 let gitoContext: GitoRecording | null = null
@@ -22,6 +18,7 @@ let statusBarItemsContext: StatusBarItems | null = null;
 let playbackSpeedContext: number = 1;
 let globalStoreContext: GlobalStore|undefined;
 let authorContext: Author|undefined;
+let gqlClientContext: Client|undefined;
 
 export const setExtensionContext = (
 	_extensionContext: vscode.ExtensionContext
@@ -48,6 +45,19 @@ export const getAuthorContext = (): Author => {
 		throw new Error('author context initialize failed!');
 	}
 	return authorContext;
+};
+
+export const setGqlClientContext = (
+	_gqlClientContext: Client
+) => {
+	gqlClientContext = _gqlClientContext;
+};
+
+export const getGqlClientContext = (): Client => {
+	if (!gqlClientContext) {
+		throw new Error('author context initialize failed!');
+	}
+	return gqlClientContext;
 };
 
 export const setPlaybackSpeedContext = (

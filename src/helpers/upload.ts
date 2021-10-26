@@ -1,5 +1,5 @@
 import { GITO_UPLOAD_URL } from "./constants";
-import axios from 'axios'
+import axios from 'axios';
 
 async function upload(
 	data: Blob|Buffer|object,
@@ -26,4 +26,4 @@ async function upload(
 
 export {
 	upload
-}
+};
