@@ -10,12 +10,12 @@ export const createAuthor = `
 
 export const updateAuthor = `
 	mutation($author:UpdateAuthorInput!){
-  updateAuthor(input:$author){
-    blogPost{
-      id
-    }
-  }
-}
+	updateAuthor(input:$author){
+		author {
+			id
+		}
+	}
+	}
 `;
 
 export const createBlog = `
@@ -29,7 +29,7 @@ export const createBlog = `
 `;
 
 export const addBlog = `
-	mutation($blogPost:AddBlogPostInput!){
+	mutation($blogPost:[AddBlogPostInput!]!){
 	addBlogPost(input:$blogPost){
 		blogPost{
 		id

@@ -1,9 +1,10 @@
 import * as vscode from 'vscode';
 import { GlobalStore } from '../helpers/globalStore';
-import { getExtensionContext, getGitoContext, getAuthorContext, getStatusBarItemsContext } from './../helpers/context';
+import { getExtensionContext, getGitoContext, getAuthorContext, getStatusBarItemsContext, getGqlClientContext } from './../helpers/context';
 import btoa from 'btoa';
 import { inform } from '../helpers/notifications';
 import { uploadData } from './../helpers/remoteStorage';
+import { runQuery } from '../helpers/graphql';
 
 
 interface BlogData{
@@ -65,30 +66,33 @@ class DayStore extends GlobalStore{
 		});
 		
 		statusBarItems.show("blog-state");
+
 		const doesExist = await this.doesExist();
 
 		uploadData(this.key, data, doesExist)
-		.then(async res => {
-				data.id = res.id;
-				// debugger
-				await this.setData(this.key, data);
-				statusBarItems.update("blog-state", (item) => {
-					return {
-						...item,
-						text: "$(pass-filled) Synced"
-					};
+			.then(async res => {
+					data.id = res.id;
+					await this.setData(this.key, data);
+					statusBarItems.update("blog-state", (item) => {
+						return {
+							...item,
+							text: "$(pass-filled) Synced"
+						};
+					});
+
+					inform(`synced ${author.name}/${this.key}`);
+
+					setTimeout(() => statusBarItems.hide("blog-state"), 2000);
+				}).catch(err => {
+					inform(`${err.message}`);
 				});
-
-				inform(`synced ${author.name}/${this.key}`);
-
-				setTimeout(() => statusBarItems.hide("blog-state"), 2000);
-			}).catch(err => {
-				inform(`${err.message}`);
-			});
 	}
 
 	async doesExist(): Promise<boolean>{
 		const data = <BlogData>this.getData(this.key);
+		if(data && !data.id) {
+			return false
+		}
 		return Boolean(data);
 	}
 

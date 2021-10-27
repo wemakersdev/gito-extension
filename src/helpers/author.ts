@@ -46,6 +46,7 @@ export const saveAuthor = async (author: Author, context: vscode.ExtensionContex
 export const getAuthor = async (context: vscode.ExtensionContext): Promise<Author> => {
 	const store = new GlobalStore(context);
 	const data = <Author>await store.getData(AUTHOR_STORAGE_KEY_NAME);
+	// debugger
 
 	if (data) {
 		throw new Error(`Unable to find author`);

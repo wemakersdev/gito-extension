@@ -2,7 +2,7 @@ import fetch from 'node-fetch';
 import {   getAuthorContext, getGqlClientContext } from './context';
 import {Author} from './author';
 import { runMutation } from './graphql';
-import { addBlog, updateBlog } from './mutations';
+import { addBlog, updateAuthor, updateBlog } from './mutations';
 import atob from 'atob';
 
 export const uploadData = async (key: string, data: any,doesExist: boolean, author: Author = getAuthorContext()) => {
@@ -39,20 +39,36 @@ export const uploadData = async (key: string, data: any,doesExist: boolean, auth
 				client,
 				mutation: addBlog,
 				variables: {
-					blogPost: {
+					blogPost: [{
 						title: k,
 						content: data.content,
 						author: {
 							id: data.authorId
 						}
-					}
+					}]
 				}
 			});
-
 			
 			const id = res.data.addBlogPost.blogPost[0].id;
 
-			return {res, id}
+			if(id){
+				await runMutation({
+					mutation: updateAuthor,
+					client,
+					variables: {
+						author: {
+							filter: {
+								id: data.authorId,
+							},
+							set: {
+								blogs: {id}
+							}
+						}
+					}
+				});
+			}
+
+			return {res, id};
 		}
 
 		// const url = `${API_URL}/upload-folder?id=${encodeURI(author.id)}&path=${encodeURI(key)}`;
