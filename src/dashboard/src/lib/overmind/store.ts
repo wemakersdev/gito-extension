@@ -85,10 +85,11 @@ export type IOvermindAction<T> = {
 	[K in keyof T]: T[K] extends AnyFunction ? exposedAction<T[K]> : IOvermindAction<T[K]>
 };
 
+const vscodeApi = acquireVsCodeApi()
 const overmind: IOvermind = {
   state: {
 	appMeta: appMetaInfo,
-	vscode: acquireVsCodeApi(),
+	vscode: vscodeApi,
 	feedItems: [],
 	app: {
 		skipIntro: false,
@@ -96,7 +97,7 @@ const overmind: IOvermind = {
 	},
 	connector: new Connector({
 		addEventListener: window.addEventListener.bind(window),
-		postMessage: acquireVsCodeApi().postMessage
+		postMessage: vscodeApi.postMessage
 	})
   },	
   actions: {

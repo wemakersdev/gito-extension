@@ -101,26 +101,26 @@ export class Dashboard {
 	private _update() {
 		const webview = this._panel.webview;
 
-		// Vary the webview's content based on where it is located in the editor.
-		// switch (this._panel.viewColumn) {
-		// 	case vscode.ViewColumn.Two:
-		// 		this._updateForCat(webview, 'Compiling Cat');
-		// 		return;
+		//Vary the webview's content based on where it is located in the editor.
+		switch (this._panel.viewColumn) {
+			case vscode.ViewColumn.Two:
+				this._updateForCat(webview);
+				return;
 
-		// 	case vscode.ViewColumn.Three:
-		// 		this._updateForCat(webview, 'Testing Cat');
-		// 		return;
+			case vscode.ViewColumn.Three:
+				this._updateForCat(webview);
+				return;
 
-		// 	case vscode.ViewColumn.One:
-		// 	default:
-		// 		this._updateForCat(webview, 'Coding Cat');
-		// 		return;
-		// }
+			case vscode.ViewColumn.One:
+			default:
+				this._updateForCat(webview);
+				return;
+		}
 	}
 
 	private _updateForCat(webview: vscode.Webview) {
 		// this._panel.title = "blog-title-update"
-		// this._panel.webview.html = this._getHtmlForWebview(webview, cats[catName]);
+		this._panel.webview.html = this._getHtmlForWebview(webview);
 	}
 
 	private _getHtmlForWebview(webview: vscode.Webview) {
