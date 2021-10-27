@@ -27,6 +27,7 @@
 
   $: if(!$state.app.skipIntro && mounted){
     actions.navigate({to: "introduction"})
+    actions.loadAuthorInfo();
   }
 
 

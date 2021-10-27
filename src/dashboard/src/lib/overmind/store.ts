@@ -5,6 +5,7 @@ import { appMetaInfo } from './appMetaInfo';
 import { navbarState, navbarActions } from './navbar';
 import { navigate } from 'svelte-navigator';
 import { blogActions } from './blog';
+import { Connector,Message } from '../helpers/connector';
 
 import type {WebviewApi} from "vscode-webview";
 import type { Writable } from 'svelte/store';
@@ -13,6 +14,7 @@ import type {INavbarActions, INavbarState} from './navbar'
 import type {AnyFunction, ParametersExceptFirst} from './common';
 import type {IBlogActions} from './blog';
 import type { NavigateOptions} from 'svelte-navigator';
+import type {EventProps} from '../helpers/connector'
 
 
 export interface FeedItem{
@@ -45,12 +47,18 @@ export interface IState{
 	vscode: WebviewApi<any>
 	feedItems: FeedItem[]
 	app: IApp,
+	connector: Connector,
+	author?: {
+		id: string
+		name: string
+	}
 }
 
 
 export interface IOvermind{
 	state: IState,
 	actions: IActions
+	
 }
 
 
@@ -61,6 +69,7 @@ export type IAction<P, O> = (context: IContext<IOvermind>, payload: P) => O
 export interface IActions {
 	fetchFeedItems: IAction<any, any>
 	handleSkipInto: IAction<any, any>,
+	loadAuthorInfo: IAction<any, any>,
 	navbar: INavbarActions,
 	blog: IBlogActions,
 	skipIntro: IAction<any, any>,
@@ -84,7 +93,11 @@ const overmind: IOvermind = {
 	app: {
 		skipIntro: false,
 		navbar: navbarState
-	}
+	},
+	connector: new Connector({
+		addEventListener: window.addEventListener.bind(window),
+		postMessage: acquireVsCodeApi().postMessage
+	})
   },	
   actions: {
     fetchFeedItems: ({state}) => {
@@ -102,6 +115,19 @@ const overmind: IOvermind = {
 
 	navigate: ({state}, {to, navigateOptions}) => {
 		window.location.hash = to;
+	},
+
+	loadAuthorInfo: async({state, actions}) =>{
+		const msg = new Message<any>({
+			type: "request-author-data",
+			data: {}
+		});
+
+		const res:any = await state.connector.sendMessage(msg);
+		state.author = {
+			id: res.authorId,
+			name: res.authorName
+		};
 	},
 
 	navbar: navbarActions,
