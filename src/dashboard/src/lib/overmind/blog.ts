@@ -1,6 +1,8 @@
 
 import { API_URL } from '../helpers/constants';
 import type { IAction } from './store';
+import { getGqlClient, runQuery } from './../helpers/gql';
+import {getAllBlogPosts, getBlogPost} from './../graphql/queries'
 
 
 export interface LineMetaInto{
@@ -21,6 +23,7 @@ export interface IBlog {
 	upvotes: number
 	downvotes: number
 	lineMetaInfo: LineMetaInto[]
+	id?:string
 }
 
 export interface IBlogActions{
@@ -51,33 +54,57 @@ export const blogActions: IBlogActions = {
 	},
 
 	fetchBlogFeedWithContent: async ({actions}, {userId}) => {
-		const url = new URL(API_URL);
-		url.pathname = "get-blog-feed";
-		url.searchParams.append("userId", userId);
-		const feed: IBlog[] = await fetch(url.href).then(res => res.json());
-		const feedWithContent = await Promise.all(feed.map(async item => {
-			try{
-				//@ts-ignore
-				const content = await actions.blog.fetchBlogContent({userId});
-				return content;
-			}catch(err){
-				return {
-					error: err
-				};
-			}
-		}));
+		const client = getGqlClient();
+		const res = await runQuery({
+			query: getAllBlogPosts,
+			client
+		});
+		
+		const blogs: IBlog[] = res.data.queryBlogPost.map((item:any) => {
 
-		return feedWithContent.filter(item => !item.error);
+			const blog:IBlog = {
+				content: item.content,
+				title: item.title,
+				author: item.author.id,
+				upvotes: item.upvotes || 0,
+				downvotes: item.downvotes || 0,
+				id: item.id,
+				url: `/blog/${item.id}`,
+				contentUrl: "",
+				lineMetaInfo: []
+			};
+			return blog;
+		});
+
+		return blogs.reverse();
 	},
 
 	getBlog: async ({state}, {blogId}): Promise<IBlog> => {
-		const url = new URL(API_URL);
-		url.pathname = "/get-blog";
-		url.searchParams.append("blogId", blogId);
-		const blog:IBlog = await fetch(url.href).then(res => {
-			return res.json();
+		const client = getGqlClient();
+		const res = await runQuery({
+			query: getBlogPost,
+			client,
+			variables: {
+				blogPostFilter: {
+					id: blogId
+				}
+			}
 		});
 
-		return blog;
+		const item = res.data.queryBlogPost[0];
+
+		const blog: IBlog = {
+			content: item.content,
+			title: item.title,
+			author: item.author.id,
+			upvotes: item.upvotes || 0,
+			downvotes: item.downvotes || 0,
+			id: item.id,
+			url: `/blog/${item.id}`,
+			contentUrl: "",
+			lineMetaInfo: []
+		};
+
+		return blog
 	}
 };

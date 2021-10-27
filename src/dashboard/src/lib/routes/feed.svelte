@@ -6,7 +6,7 @@
 
   let feedItems = [];
 
-  actions.blog.fetchBlogFeedWithContent({ userId: "sadsad" });
+//   actions.blog.fetchBlogFeedWithContent({ userId: "sadsad" });
 </script>
 
 
@@ -16,7 +16,7 @@
 	}
 </style>
 <div class="px-6 py-5 pt-10">
-  {#await actions.blog.fetchBlogFeed({ userId: "sadsad" })}
+  {#await actions.blog.fetchBlogFeedWithContent({ userId: "sadsad" })}
     loading...
   {:then feed}
     {#each feed as feedItem}
