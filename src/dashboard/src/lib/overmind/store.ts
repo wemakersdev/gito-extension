@@ -20,7 +20,7 @@ import type {AnyFunction, ParametersExceptFirst} from './common';
 import type {IBlogActions} from './blog';
 import type { NavigateOptions} from 'svelte-navigator';
 import type {EventProps} from '../helpers/connector'
-
+import type {NavigatorLocation} from 'svelte-navigator'
 
 export interface FeedItem{
 	url: string,
@@ -44,7 +44,8 @@ export interface IAppMetaInfo{
 
 export interface IApp{
 	skipIntro: boolean,
-	navbar: INavbarState
+	navbar: INavbarState,
+	location?: string
 }
 
 export interface IState{
@@ -82,6 +83,7 @@ export interface IActions {
 	navigate: IAction<{to: string, navigateOptions?: NavigateOptions}, any>
 	save: IAction<any, any>
 	load: IAction<any, any>
+	handleLocationChange: IAction<NavigatorLocation, any>
 }
 
 export type StoredStateItem = [string, any];
@@ -111,7 +113,7 @@ const overmind: IOvermind = {
 		addEventListener: window.addEventListener.bind(window),
 		postMessage: vscodeApi.postMessage
 	}),
-	persistentKeys: ["app.skipIntro"]
+	persistentKeys: ["app.skipIntro", "app.location"], 
   },	
   actions: {
     fetchFeedItems: ({state}) => {
@@ -128,8 +130,11 @@ const overmind: IOvermind = {
 		actions.save();
 	},
 
-	navigate: ({state}, {to, navigateOptions}) => {
+	navigate: ({state, actions}, {to, navigateOptions}) => {
 		window.location.hash = to;
+
+		state.app.location = to;
+		actions.save();
 	},
 
 	loadAuthorInfo: async({state, actions}) =>{
@@ -147,7 +152,7 @@ const overmind: IOvermind = {
 
 	load: ({state, actions}) => {
 		const _state: any = state.vscode.getState();
-		// debugger
+		debugger
 		if(_state && _state.length){
 			_state.forEach(([key, value]: StoredStateItem) => {
 				set(state, key, value);
@@ -162,6 +167,11 @@ const overmind: IOvermind = {
 		});
 		state.vscode.setState(_state);
 		return true;
+	},
+
+	handleLocationChange: ({state, actions}, loc) => {
+		// state.app.location = loc;
+		// actions.save();
 	},
 
 	navbar: navbarActions,

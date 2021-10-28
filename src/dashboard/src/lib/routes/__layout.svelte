@@ -1,6 +1,23 @@
 <script lang="ts">
 	import Navbar from '../components/Navbar.svelte';
-	import { state, } from '../overmind/store';
+	import { actions, state } from '../overmind/store';
+	import {useLocation} from 'svelte-navigator';
+import { onMount } from 'svelte';
+
+	let appliedLocation:boolean = false
+
+	const location = useLocation();
+
+	onMount(() => {
+		// if($state.app.location && !appliedLocation){
+		// 	actions.navigate({to: $state.app.location.pathname})
+		// }
+		// location.subscribe(loc => actions.handleLocationChange(loc))
+	})
+
+
+
+
 </script>
 
 <style>
@@ -9,6 +26,7 @@
 		width: 100%;
 		margin: 0;
 		padding: 0;
+		font-size: 16px
 	}
 	
 </style>

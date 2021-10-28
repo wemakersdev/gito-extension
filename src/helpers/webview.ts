@@ -2,11 +2,10 @@ import * as vscode from 'vscode';
 //@ts-ignore
 import html from '!!raw-loader!./../dashboard/dist/index.html'
 
-export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions {
-
+export function getWebviewOptions(extensionUri: vscode.Uri): vscode.WebviewOptions & vscode.WebviewPanelOptions {
 	return {
+		localResourceRoots: [],
 		enableScripts: true,
-		localResourceRoots: []
 	};
 }
 
