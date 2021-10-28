@@ -152,7 +152,6 @@ const overmind: IOvermind = {
 
 	load: ({state, actions}) => {
 		const _state: any = state.vscode.getState();
-		debugger
 		if(_state && _state.length){
 			_state.forEach(([key, value]: StoredStateItem) => {
 				set(state, key, value);

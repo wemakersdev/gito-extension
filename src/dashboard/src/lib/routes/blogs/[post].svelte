@@ -7,7 +7,7 @@
 
 </script>
 
-<div class="px-5 py-8">
+<div class="px-8 py-5">
 	{#await actions.blog.getBlog({blogId: id})}
 		<div class="alert">
 		<div class="flex-1">
@@ -19,7 +19,7 @@
 		</div>
 
 	{:then blog}
-		<div class="px-8 pt-8">
+		<div class="">
 			<div class="card-title">{blog.title}</div>
 			<div class="text-xs">@{blog.author} <span class="opacity-50">12 January 2021</span></div>
 	

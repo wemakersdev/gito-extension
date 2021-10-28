@@ -10,7 +10,7 @@
 		fill: yellow !important;
 	}
 </style>
-<div class="px-6 py-5 pt-10">
+<div class="px-6 py-5">
   {#await actions.blog.fetchBlogFeedWithContent({ userId: "sadsad" })}
     <div class="alert">
 		<div class="flex-1">
