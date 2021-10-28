@@ -1,10 +1,10 @@
 import type {WebviewApi} from 'vscode-webview';
 import type { IOvermind } from '../overmind/store';
 
-let state:any = {}
 
-export const acquireVsCodeApiMock = ():WebviewApi<IOvermind> => {	
-	
+export const acquireVsCodeApiMock = ():WebviewApi<IOvermind> => {
+	const STORAGE_KEY = "WEBVIEW_STATE_STORE";	
+
 	const api: WebviewApi<IOvermind> = {
 		postMessage: (message: any) => {
 
@@ -27,11 +27,22 @@ export const acquireVsCodeApiMock = ():WebviewApi<IOvermind> => {
 			}
 			
 		},
-		setState: (newState): any=> {
-			state = newState;
-			return state
+		setState: (newState: any = {}): any=> {
+			// debugger
+			window.localStorage.setItem(STORAGE_KEY, JSON.stringify(newState));
+			return newState;
 		},
-		getState: (): any => state
+		getState: (): any => {
+			const str = window.localStorage.getItem(STORAGE_KEY);
+
+			if(str){
+				const state = JSON.parse(str);
+				// debugger
+				return state;
+			}
+
+			return null;
+		}
 	};
 
 	return api

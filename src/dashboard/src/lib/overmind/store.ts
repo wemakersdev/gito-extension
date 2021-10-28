@@ -6,6 +6,11 @@ import { navbarState, navbarActions } from './navbar';
 import { navigate } from 'svelte-navigator';
 import { blogActions } from './blog';
 import { Connector,Message } from '../helpers/connector';
+import isPrimitive from 'is-primitive';
+//@ts-ignore
+import get from 'lodash.get'
+//@ts-ignore
+import set from 'lodash.set'
 
 import type {WebviewApi} from "vscode-webview";
 import type { Writable } from 'svelte/store';
@@ -51,7 +56,8 @@ export interface IState{
 	author?: {
 		id: string
 		name: string
-	}
+	},
+	persistentKeys: string[]
 }
 
 
@@ -74,7 +80,12 @@ export interface IActions {
 	blog: IBlogActions,
 	skipIntro: IAction<any, any>,
 	navigate: IAction<{to: string, navigateOptions?: NavigateOptions}, any>
+	save: IAction<any, any>
+	load: IAction<any, any>
 }
+
+export type StoredStateItem = [string, any];
+export type StoredState = StoredStateItem[]
 
 
 
@@ -88,6 +99,7 @@ export type IOvermindAction<T> = {
 const vscodeApi = acquireVsCodeApi()
 const overmind: IOvermind = {
   state: {
+	
 	appMeta: appMetaInfo,
 	vscode: vscodeApi,
 	feedItems: [],
@@ -98,7 +110,8 @@ const overmind: IOvermind = {
 	connector: new Connector({
 		addEventListener: window.addEventListener.bind(window),
 		postMessage: vscodeApi.postMessage
-	})
+	}),
+	persistentKeys: ["app.skipIntro"]
   },	
   actions: {
     fetchFeedItems: ({state}) => {
@@ -112,6 +125,7 @@ const overmind: IOvermind = {
 	skipIntro: ({state, actions}) => {
 		actions.handleSkipInto();
 		actions.navigate({to: "feed"});
+		actions.save();
 	},
 
 	navigate: ({state}, {to, navigateOptions}) => {
@@ -129,6 +143,25 @@ const overmind: IOvermind = {
 			id: res.authorId,
 			name: res.authorName
 		};
+	},
+
+	load: ({state, actions}) => {
+		const _state: any = state.vscode.getState();
+		// debugger
+		if(_state && _state.length){
+			_state.forEach(([key, value]: StoredStateItem) => {
+				set(state, key, value);
+			});
+		}
+		return false;
+	},
+
+	save: ({state, actions}) => {
+		const _state = state.persistentKeys.map((key) => {
+			return [key, get(state, key)];
+		});
+		state.vscode.setState(_state);
+		return true;
 	},
 
 	navbar: navbarActions,

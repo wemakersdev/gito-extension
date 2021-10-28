@@ -16,13 +16,22 @@
 
   import { createHistory} from "svelte-navigator";
   import createHashSource from "./lib/helpers/hashHistory";
-  import { onMount } from "svelte";
+  import { onDestroy, onMount } from "svelte";
 
 	const memoryHistory = createHistory(createHashSource());
   let mounted = false
+  let unsubSave
 
   onMount(() => {
+    actions.load();
     mounted = true
+  })
+
+  onDestroy(() => {
+
+    // if(unsubSave){
+    //   unsubSave()
+    // }
   })
 
   $: if(!$state.app.skipIntro && mounted){
@@ -30,7 +39,9 @@
     actions.loadAuthorInfo();
   }
 
-
+  // $: if(mounted && $state){
+  //   actions.save()
+  // }
 </script>
 
 <Router history={memoryHistory}>
